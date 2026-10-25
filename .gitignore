@@ -1,0 +1,44 @@
+node_modules/
+dist/
+dist-dev/
+dist-chrome/
+dist-chrome.dev/
+dist-firefox/
+.npm-cache/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crx
+*.xpi
+*.zip
+*.tgz
+
+# Logs, coverage and temporary artifacts
+*.log
+npm-debug.log*
+coverage/
+.nyc_output/
+.local-artifacts/
+.cache/
+.vite/
+test-results/
+playwright-report/
+/*-preview.png
+*.tsbuildinfo
+*.bak
+
+# Editors and operating systems
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini

@@ -1,0 +1,16 @@
+import { cpSync, readFileSync, writeFileSync, rmSync } from "node:fs";
+import { resolve, dirname, basename } from "node:path";
+import { fileURLToPath } from "node:url";
+const root = fileURLToPath(new URL("../", import.meta.url));
+const output = resolve(root, "dist-firefox");
+if (resolve(dirname(output)) !== resolve(root) || basename(output) !== "dist-firefox") throw new Error("Geçersiz derleme yolu.");
+const manifest = JSON.parse(readFileSync(resolve(root, "dist-chrome/manifest.json"), "utf8"));
+rmSync(output, { recursive: true, force: true });
+cpSync(resolve(root, "dist-chrome"), output, { recursive: true });
+delete manifest.minimum_chrome_version;
+manifest.permissions = manifest.permissions.filter(value => !["offscreen", "tabCapture"].includes(value));
+manifest.optional_permissions = manifest.optional_permissions.filter(value => value !== "debugger");
+manifest.background = { scripts: [manifest.background.service_worker], type: "module" };
+manifest.browser_specific_settings = { gecko: { id: "extension-manager@local", strict_min_version: "128.0" } };
+writeFileSync(resolve(output, "manifest.json"), JSON.stringify(manifest, null, 2));
+console.log("Firefox paketi: dist-firefox");
