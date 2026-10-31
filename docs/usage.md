@@ -4,17 +4,21 @@ Modül yapısıyla birçok yardımcı özellik içerir. Türkçe, koyu temalı, 
 
 ## Component yapısı
 
-`App.jsx` modül seçimini yönetir. Ana ekranda yalnızca `MainMenu` ve içindeki `ModuleTile` kutuları gösterilir. Bir modül açıldığında seçilen modül ve bağımsız `PageHeader` render edilir. Header altta sabittir; 600 px sınırında yalnızca modül içeriği kaydırılır.
+`components/popup/App.jsx` modül seçimini yönetir. Ana ekranda `ExtensionMenu` ve içindeki `ExtensionMenuTile` kutuları gösterilir. Bir modül açıldığında seçilen modül ve bağımsız `PageHeader` render edilir. Header altta sabittir; 600 px sınırında yalnızca modül içeriği kaydırılır.
 
 İlk açılışta Extension Manager ve Volume Booster aktiftir; diğer modüller pasiftir. Sağ üstteki çark düzenleme modunu açar ve pasif grubu aşağıda gösterir. Modülleri gruplar arasında sürükleyerek etkinleştirip kapatabilir, aynı grupta sürükleyerek sıralayabilirsin. Her bırakma işlemi otomatik kaydedilir; ayrı kaydet butonu yoktur. Seçimler sonraki açılışlarda korunur. Yeni modüller mevcut sıralamanı bozmadan pasif gruba eklenir.
 
 Pasife alınan Volume Booster bütün sekmelerdeki ses işlemesini durdurur ve ses belgesini kapatır. Yazı Tipi Bulucu sayfalardaki katman ve dinleyicilerini kaldırır. Pasif modüllerin başlatılması arka planda da engellenir. Son 10 dakikada açılmış aktif modüllerin kodları popup açılınca önceden yüklenir. Ana menüde aktif bir kart üzerinde fare 200 ms kalırsa kodu hazırlanır; erken ayrılınca bekleme iptal olur. Ön yükleme component oluşturmaz veya modülü çalıştırmaz. Açılma zamanları `storage.session` içinde tutulur ve tarayıcı yeniden başladığında temizlenir.
 
-- Ortak componentler: `components/Button.jsx`, `Toggle.jsx`, `Slider.jsx`, `PageHeader.jsx`, `ModuleTile.jsx`.
-- Modüller: `components/modules/MainMenu.jsx`, `ExtensionManager.jsx`, `QrCreator.jsx`, `VolumeBooster.jsx`, `FontFinder.jsx`, `ColorPicker.jsx`, `PageDrawing.jsx`, `NewTabCustomizer.jsx`, `KeyboardShortcuts.jsx`, `FullPageCapture.jsx`, `DarkMode.jsx`, `DomainGroups.jsx`, `PageEditor.jsx`.
+- Ortak componentler: `components/Button.jsx`, `Toggle.jsx`, `Slider.jsx`, `PageHeader.jsx`, `ExtensionMenu.jsx`, `ExtensionMenuTile.jsx`.
+- Modüller: `components/modules/` altında her özelliğin kendi klasöründe bulunur. Yeni sekme sayfası ve bileşenleri `components/modules/newtab/` içindedir.
+
+`ExtensionMenuTile`, `variant` özelliğiyle `icon`, `picture`, `icon-tiny` veya `picture-tiny` kullanır. Varsayılan `icon` varyantıdır. Resimli varyantlara PNG yolu `picture` özelliğiyle verilir; resim kartı doldurur ve taşan bölümü kırpılır. `tiny` varyantları 2:1 oranındadır.
+
+Settings ekranından `dull` ve `win8` temaları seçilebilir. Her temanın `components/popup/styles.css` içindeki `--dull-*` veya `--win8-*` değişkenleri bağımsızdır. Kart görseli politikası `components/menuThemes.js` içindedir: dull ikon kullanır; win8, kartın `picture` değeri varsa görseli, yoksa veya görsel yüklenemezse ikonu gösterir. Eski `theme-1` ve `theme-2` seçimleri yeni adlara taşınır.
 - Volume Booster, Yazı Tipi Bulucu, Sayfaya Çizim veya Sayfa Editörü işlem yapıyorsa menü kartının sağ üstünde beyaz bir nokta görünür. Koyu Mod açıkken de gösterge görünür. Salt görüntülenen çizim göstergeyi açmaz. Gösterge çalışma olaylarıyla güncellenir; sürekli sorgulama yapılmaz.
-- Chrome ses motoru: `background.js`, `offscreen.js`, `modules/audio-settings.js`.
-- Sayfaya enjekte edilen font inceleme: `modules/font-inspector.js`.
+- Chrome ses motoru: `background.js` ve `components/modules/volume-booster/` içindeki offscreen ve ses ayar dosyaları.
+- Sayfaya enjekte edilen font inceleme: `components/modules/font-finder/font-inspector.js`.
 
 ## Geliştirme ve otomatik güncelleme
 
@@ -60,7 +64,7 @@ Volume Booster aktif sekmenin sesini 0.0–6.0 aralığında işler. 1.0 normal 
 
 Yazı Tipi Bulucu modül ekranına girince otomatik açılır. Bu ekran açıkken sayfadaki yazıların üzerine geldiğinde CSS font ailesi, boyutu ve kalınlığı imleç yanında görünür. Menüye dönünce veya popup kapanınca bağlantı kesilir ve font katmanı ile dinleyicileri kaldırılır. Esc ile de kapatılabilir. Chrome'un dahili sayfalarında, Web Mağazası'nda ve ana sayfadan ayrı iframe belgelerinde çalışmaz. Font ailesi CSS'in tanımladığı font/fallback listesidir.
 
-Renk Seçici Chrome'un ekran renk seçicisini açar. Seçilen renk HEX ve RGB olarak kopyalanabilir; son renk kalıcı saklanır. Esc seçimi iptal eder.
+Renk Seçici açıldığında sayfanın görüntüsü üzerinde seçim başlar. İmlecin yanındaki büyüteç ve HEX kodu ile piksel seçilir; son renk saklanır. Esc seçimi iptal eder. Sayfa kaydırıldığında veya yeniden boyutlandırıldığında görüntü yenilenir.
 
 Klavye Kısayolları varsayılan pasiftir; çarktan aktif gruba taşı. `Ctrl+Q` açık sekmeler arasında son kullandığın iki sekmeye sırayla döner (2 → 3 → Ctrl+Q → 2 → Ctrl+Q → 3). Her pencerenin geçmişi ayrıdır. Sekme kimlikleri `storage.session` içinde tutulur; worker uyuyunca korunur, tarayıcı yeniden başladığında sıfırlanır. Pasifken sekme takibi ve kısayol işlemleri durur; geçmiş temizlenir, özel kısayollar ve koşulları korunur.
 
@@ -98,7 +102,7 @@ Hava durumu manuel şehir seçimiyle çalışır. İlk şehir aramasında yalnı
 
 Arka plan olarak kullanıcı tarafından sağlanan `assets/newtab-1.png` paketle birlikte yüklenir; uzak görsel servisine bağlantı yoktur. İkonlar `assets/icon-16x.png`, `icon-32x.png`, `icon-48x.png`, `icon-64x.png` ve `icon-128x.png` dosyalarından alınır; üç çıktı paketi de aynı kaynakları kullanır. [Arka plan kaynak notu](../assets/newtab-background.md).
 
-Chrome yeni sekme değiştirmesini manifestte sabit tanımlar. Bu nedenle küçük `newtab.js` giriş kodu modülün durumunu kontrol eder; pasifken React ve düzenleyiciyi yüklemeden Chrome'un kendi `chrome://new-tab-page/` ekranına yönlendirir. Açık özelleştirilmiş sekmeler de modül pasife alındığında native ekrana döner. Başka bir eklentinin yeni sekme ekranını geri yüklemez. Manifest değiştiği için eklentiyi Chrome'da bir kez yeniden yükle.
+Chrome yeni sekme değiştirmesini manifestte sabit tanımlar. Bu nedenle `components/modules/newtab/newtab.js` giriş kodu modülün durumunu kontrol eder; pasifken React ve düzenleyiciyi yüklemeden Chrome'un kendi `chrome://new-tab-page/` ekranına yönlendirir. Açık özelleştirilmiş sekmeler de modül pasife alındığında native ekrana döner. Başka bir eklentinin yeni sekme ekranını geri yüklemez. Manifest değiştiği için eklentiyi Chrome'da bir kez yeniden yükle.
 
 İzinler: `storage` modül düzeni, yeni sekme yerleşimi, renk ve çizimleri saklamak; `management` eklenti yönetimi; `activeTab` ve `scripting` seçilen sekmede font inceleme ve çizim; `tabCapture` ve `offscreen` popup kapalıyken de sekme sesini işlemek için kullanılır. Manuel kullanım kalıcı site erişimi istemez; otomatik çizim geri yüklemesi için isteğe bağlı site erişimi alınır. Görevler, çizimler, yerleşim ve odak kayıtları yerelde kalır; hava durumu için yalnızca seçilen şehir/koordinatlar Open-Meteo servisine gönderilir; geliştirme sürümü otomatik güncelleme için yerel Vite sunucusuna bağlanır. Yeni manifestin tanınması için mevcut eklentiyi bir kez yeniden yükle.
 

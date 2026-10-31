@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 export function domainOf(url) {
   try {
     const parsed = new URL(url);
@@ -34,9 +35,9 @@ export async function groupDomainTabs() {
 }
 
 export async function captureFullPage(tabId) {
-  if (!await chrome.permissions.contains({ permissions: ["debugger", "downloads"] })) throw new Error("Ekran görüntüsü izni verilmedi.");
+  if (!await chrome.permissions.contains({ permissions: ["debugger", "downloads"] })) throw new Error(t("common_screenshot_permission_was_not_granted"));
   const tab = await chrome.tabs.get(tabId);
-  if (!domainOf(tab.url)) throw new Error("Normal bir web sayfasında tekrar dene.");
+  if (!domainOf(tab.url)) throw new Error(t("common_try_again_on_regular_web_page"));
   const target = { tabId };
   let attached = false;
   try {
@@ -47,7 +48,7 @@ export async function captureFullPage(tabId) {
       format: "png", captureBeyondViewport: true, fromSurface: true,
       clip: { x: 0, y: 0, width, height, scale: 1 }
     });
-    if (!data) throw new Error("Görüntü oluşturulamadı.");
+    if (!data) throw new Error(t("common_could_not_create_image"));
     const filename = `${domainOf(tab.url).replace(/[^a-z0-9.-]/gi, "_")}-${Date.now()}.png`;
     const downloadId = await chrome.downloads.download({ url: `data:image/png;base64,${data}`, filename });
     return { width, height, filename, downloadId };

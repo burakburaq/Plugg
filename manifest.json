@@ -1,30 +1,95 @@
 {
   "manifest_version": 3,
   "name": "plugg",
-  "version": "1.0.0",
-  "description": "Modül yapısıyla birçok yardımcı özellik içerir.",
+  "version": "26.1.0",
+  "default_locale": "en",
+  "description": "__MSG_extension_description__",
   "minimum_chrome_version": "116",
-  "permissions": ["management", "activeTab", "scripting", "tabCapture", "offscreen", "storage"],
-  "optional_host_permissions": ["http://*/*", "https://*/*"],
-  "optional_permissions": ["debugger", "downloads", "tabs", "tabGroups"],
-  "background": { "service_worker": "background.js", "type": "module" },
-  "chrome_url_overrides": { "newtab": "newtab.html" },
+  "permissions": [
+    "management",
+    "activeTab",
+    "scripting",
+    "tabCapture",
+    "offscreen",
+    "storage"
+  ],
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "optional_permissions": [
+    "debugger",
+    "downloads",
+    "tabs",
+    "tabGroups"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "fonts/BebasNeue-Regular.ttf"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "chrome_url_overrides": {
+    "newtab": "components/modules/newtab/newtab.html"
+  },
   "commands": {
-    "previous-tab": { "suggested_key": { "default": "Ctrl+Q", "mac": "MacCtrl+Q" }, "description": "Son kullanılan iki sekme arasında geçiş" },
-    "tab-left": { "suggested_key": { "default": "Ctrl+Left", "mac": "MacCtrl+Left" }, "description": "Sekme çubuğunda sola git" },
-    "tab-right": { "suggested_key": { "default": "Ctrl+Right", "mac": "MacCtrl+Right" }, "description": "Sekme çubuğunda sağa git" },
-    "custom-1": { "description": "Özel kısayol 1" },
-    "custom-2": { "description": "Özel kısayol 2" },
-    "custom-3": { "description": "Özel kısayol 3" },
-    "custom-4": { "description": "Özel kısayol 4" },
-    "custom-5": { "description": "Özel kısayol 5" },
-    "custom-6": { "description": "Özel kısayol 6" },
-    "custom-7": { "description": "Özel kısayol 7" },
-    "custom-8": { "description": "Özel kısayol 8" }
+    "previous-tab": {
+      "suggested_key": {
+        "default": "Ctrl+Q",
+        "mac": "MacCtrl+Q"
+      },
+      "description": "__MSG_shortcuts_switch_between_last_two_tabs__"
+    },
+    "tab-left": {
+      "suggested_key": {
+        "default": "Ctrl+Left",
+        "mac": "MacCtrl+Left"
+      },
+      "description": "__MSG_shortcuts_move_left_in_tab_bar__"
+    },
+    "tab-right": {
+      "suggested_key": {
+        "default": "Ctrl+Right",
+        "mac": "MacCtrl+Right"
+      },
+      "description": "__MSG_shortcuts_move_right_in_tab_bar__"
+    },
+    "custom-1": {
+      "description": "__MSG_common_custom_shortcut_1__"
+    },
+    "custom-2": {
+      "description": "__MSG_common_custom_shortcut_2__"
+    },
+    "custom-3": {
+      "description": "__MSG_common_custom_shortcut_3__"
+    },
+    "custom-4": {
+      "description": "__MSG_common_custom_shortcut_4__"
+    },
+    "custom-5": {
+      "description": "__MSG_common_custom_shortcut_5__"
+    },
+    "custom-6": {
+      "description": "__MSG_common_custom_shortcut_6__"
+    },
+    "custom-7": {
+      "description": "__MSG_common_custom_shortcut_7__"
+    },
+    "custom-8": {
+      "description": "__MSG_common_custom_shortcut_8__"
+    }
   },
   "action": {
     "default_title": "plugg",
-    "default_popup": "popup.html",
+    "default_popup": "components/popup/popup.html",
     "default_icon": {
       "16": "assets/icon-16x.png",
       "32": "assets/icon-32x.png",

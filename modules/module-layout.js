@@ -1,5 +1,5 @@
-export const MODULE_IDS = ["manager", "volume", "qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video"];
-export const DEFAULT_LAYOUT = { active: ["manager", "volume"], passive: ["qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video"] };
+export const MODULE_IDS = ["manager", "volume", "qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"];
+export const DEFAULT_LAYOUT = { active: ["manager", "volume"], passive: ["qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] };
 export const LAYOUT_KEY = "moduleLayout";
 
 export function normalizeLayout(value) {

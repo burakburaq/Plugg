@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { DARK_DEFAULTS, DARK_KEY, normalizeDark } from "../modules/dark-settings.js";
-import { handleDarkMode, darkPageContext } from "../modules/dark-background.js";
+import { DARK_DEFAULTS, DARK_KEY, normalizeDark } from "../components/modules/dark-mode/dark-settings.js";
+import { handleDarkMode, darkPageContext } from "../components/modules/dark-mode/dark-background.js";
 
 function mockDark(initial) {
   const data = { [DARK_KEY]: structuredClone(initial) };
@@ -56,7 +56,7 @@ test("registration and injection failures do not leave dark mode falsely enabled
     await assert.rejects(handleDarkMode({ type: "dark:set", patch: { enabled: true } }), /Register failed/);
     assert.equal(data[DARK_KEY].enabled, false); assert.equal(state.registered, false);
     state.failRegister = false; state.failInject = true;
-    await assert.rejects(handleDarkMode({ type: "dark:set", patch: { enabled: true } }), /uygulanamadı/);
+    await assert.rejects(handleDarkMode({ type: "dark:set", patch: { enabled: true } }), /Could not apply dark mode/);
     assert.equal(data[DARK_KEY].enabled, false); assert.equal(state.registered, false);
   } finally { delete globalThis.chrome; }
 });
@@ -89,7 +89,7 @@ test("a page recovery failure stays visible and leaves the off control usable", 
   state.failInject = true;
   try {
     const result = await handleDarkMode({ type: "dark:get" });
-    assert.equal(result.enabled, true); assert.match(result.warning, /uygulanamadı/);
+    assert.equal(result.enabled, true); assert.match(result.warning, /Could not apply dark mode/);
     await handleDarkMode({ type: "dark:set", patch: { enabled: false } });
     assert.equal(data[DARK_KEY].enabled, false);
   } finally { delete globalThis.chrome; }

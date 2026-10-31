@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { domainOf, groupByDomain, captureFullPage, groupDomainTabs } from "../modules/page-tools.js";
-import { normalizeDark, DARK_DEFAULTS } from "../modules/dark-settings.js";
+import { normalizeDark, DARK_DEFAULTS } from "../components/modules/dark-mode/dark-settings.js";
 
 test("domain grouping excludes pinned/internal tabs and keeps subdomains separate", () => {
   assert.equal(domainOf("https://www.example.com/path"), "example.com");

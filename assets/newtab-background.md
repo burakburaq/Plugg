@@ -12,5 +12,5 @@ Kaynak kodunun MIT lisansı, görsellerin üçüncü taraf haklarını doğrulam
 Ayrıntılar: [kaynak bildirimleri](../THIRD_PARTY_NOTICES.md).
 
 Daha önce kullanılan AI üretimi `public/backgrounds/sunset.png` artık
-kullanılmaz ve dağıtıma dahil edilmez; yerel arşiv `.local-artifacts/` altında
-Git dışında tutulur.
+kullanılmaz ve dağıtıma dahil edilmez; arşiv kopyası `docs/sunset.png` altında
+tutulur.

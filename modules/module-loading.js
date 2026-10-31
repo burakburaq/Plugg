@@ -1,17 +1,19 @@
+import { t } from "./i18n.js";
 const loaders = {
-  manager: () => import("../components/modules/ExtensionManager.jsx"),
-  qr: () => import("../components/modules/QrCreator.jsx"),
-  volume: () => import("../components/modules/VolumeBooster.jsx"),
-  font: () => import("../components/modules/FontFinder.jsx"),
-  color: () => import("../components/modules/ColorPicker.jsx"),
-  drawing: () => import("../components/modules/PageDrawing.jsx"),
-  newtab: () => import("../components/modules/NewTabCustomizer.jsx"),
-  shortcuts: () => import("../components/modules/KeyboardShortcuts.jsx"),
-  screenshot: () => import("../components/modules/FullPageCapture.jsx"),
-  dark: () => import("../components/modules/DarkMode.jsx"),
-  groups: () => import("../components/modules/DomainGroups.jsx"),
-  editor: () => import("../components/modules/PageEditor.jsx"),
-  video: () => import("../components/modules/VideoTools.jsx")
+  manager: () => import("../components/modules/extension-manager/ExtensionManager.jsx"),
+  qr: () => import("../components/modules/qr-creator/QrCreator.jsx"),
+  volume: () => import("../components/modules/volume-booster/VolumeBooster.jsx"),
+  font: () => import("../components/modules/font-finder/FontFinder.jsx"),
+  color: () => import("../components/modules/color-picker/ColorPicker.jsx"),
+  drawing: () => import("../components/modules/page-drawing/PageDrawing.jsx"),
+  newtab: () => import("../components/modules/newtab/NewTabCustomizer.jsx"),
+  shortcuts: () => import("../components/modules/keyboard-shortcuts/KeyboardShortcuts.jsx"),
+  screenshot: () => import("../components/modules/page-capture/FullPageCapture.jsx"),
+  dark: () => import("../components/modules/dark-mode/DarkMode.jsx"),
+  groups: () => import("../components/modules/tab-groups/DomainGroups.jsx"),
+  editor: () => import("../components/modules/page-editor/PageEditor.jsx"),
+  video: () => import("../components/modules/video-tools/VideoTools.jsx"),
+  gestureflow: () => import("../components/modules/gestureflow/GestureFlow.jsx")
 };
 const pending = new Map();
 
@@ -29,7 +31,7 @@ export function recentModules(value, now = Date.now()) {
 }
 
 export function loadModule(id) {
-  if (!Object.hasOwn(loaders, id)) return Promise.reject(new Error("Bilinmeyen modül"));
+  if (!Object.hasOwn(loaders, id)) return Promise.reject(new Error(t("common_unknown_module")));
   if (!pending.has(id)) {
     pending.set(id, loaders[id]().catch(error => { pending.delete(id); throw error; }));
   }

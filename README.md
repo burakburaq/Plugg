@@ -45,7 +45,7 @@ Chrome ile eşdeğer destek henüz sağlanmamıştır.
 | Video Araçları | Doğrulandı | Doğrulandı |
 | Volume Booster | Desteklenir | Desteklenmez |
 | Sayfa Fotoğrafı | Desteklenir | Desteklenmez |
-| Renk Seçici | EyeDropper API gerekir | EyeDropper API yoksa kullanılamaz |
+| Renk Seçici | Etkin sekme erişimi gerekir | Tarayıcı özel sayfalarında kullanılamaz |
 | Diğer modüller | Chrome için geliştirildi | Tam uyumluluk doğrulanmadı |
 
 Video Araçları standart HTML videolarını hedefler; ayrı iframe ve kapalı

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { normalizeVideoSettings, VIDEO_DEFAULTS, VIDEO_SITES_KEY } from "../modules/video-settings.js";
-import { handleVideo, stopVideos, videoRunning } from "../modules/video-background.js";
+import { normalizeVideoSettings, VIDEO_DEFAULTS, VIDEO_SITES_KEY } from "../components/modules/video-tools/video-settings.js";
+import { handleVideo, stopVideos, videoRunning } from "../components/modules/video-tools/video-background.js";
 
 test("video settings reject damaged values and bound geometry and image controls", () => {
   assert.deepEqual(normalizeVideoSettings(null), VIDEO_DEFAULTS);

@@ -1,11 +1,22 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { DEFAULT_LAYOUT, normalizeLayout, moveModule } from "../modules/module-layout.js";
+import { MENU_THEMES, normalizeMenuTheme, resolveTileVariant } from "../components/menuThemes.js";
+
+test("theme migration and picture policy preserve small card variants", () => {
+  assert.equal(normalizeMenuTheme("theme-1"), "dull");
+  assert.equal(normalizeMenuTheme("theme-2"), "win8");
+  assert.equal(normalizeMenuTheme("unknown"), "dull");
+  assert.equal(resolveTileVariant("picture", MENU_THEMES.dull.allowPictures, true), "icon");
+  assert.equal(resolveTileVariant("picture-tiny", MENU_THEMES.dull.allowPictures, true), "icon-tiny");
+  assert.equal(resolveTileVariant("icon-tiny", MENU_THEMES.win8.allowPictures, true), "picture-tiny");
+  assert.equal(resolveTileVariant("picture", MENU_THEMES.win8.allowPictures, false), "icon");
+});
 
 test("layout preserves choices, defaults only missing data and keeps unlisted modules passive", () => {
   assert.deepEqual(normalizeLayout(), DEFAULT_LAYOUT);
-  assert.deepEqual(normalizeLayout({ active: [], passive: ["font", "qr", "volume", "manager"] }), { active: [], passive: ["font", "qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video"] });
-  assert.deepEqual(normalizeLayout({ active: ["font", "font", "unknown"], passive: ["font", "manager"] }), { active: ["font"], passive: ["manager", "volume", "qr", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video"] });
+  assert.deepEqual(normalizeLayout({ active: [], passive: ["font", "qr", "volume", "manager"] }), { active: [], passive: ["font", "qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
+  assert.deepEqual(normalizeLayout({ active: ["font", "font", "unknown"], passive: ["font", "manager"] }), { active: ["font"], passive: ["manager", "volume", "qr", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
 });
 
 test("drop positions support reordering and moving to an empty group without duplicating modules", () => {
@@ -13,10 +24,10 @@ test("drop positions support reordering and moving to an empty group without dup
   assert.deepEqual(reordered.active, ["volume", "manager"]);
   assert.deepEqual(moveModule(reordered, "manager", "active", 0).active, DEFAULT_LAYOUT.active);
   const passive = moveModule(DEFAULT_LAYOUT, "volume", "passive", 1);
-  assert.deepEqual(passive, { active: ["manager"], passive: ["qr", "volume", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video"] });
+  assert.deepEqual(passive, { active: ["manager"], passive: ["qr", "volume", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
   const allPassive = moveModule(passive, "manager", "passive", 3);
-  assert.deepEqual(moveModule(allPassive, "font", "active", 0), { active: ["font"], passive: ["qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video"] });
-  assert.deepEqual(DEFAULT_LAYOUT, { active: ["manager", "volume"], passive: ["qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video"] });
+  assert.deepEqual(moveModule(allPassive, "font", "active", 0), { active: ["font"], passive: ["qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
+  assert.deepEqual(DEFAULT_LAYOUT, { active: ["manager", "volume"], passive: ["qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
 });
 
 test("passivation waits for pending starts, stops all tabs and blocks further starts", async () => {

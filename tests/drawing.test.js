@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { drawingUrlKey, normalizeDrawing } from "../modules/drawing-data.js";
-import { handleDrawing, restoreDrawing, stopDrawings, drawingRunning, invalidateDrawingSettings } from "../modules/drawing-background.js";
+import { drawingUrlKey, normalizeDrawing } from "../components/modules/page-drawing/drawing-data.js";
+import { handleDrawing, restoreDrawing, stopDrawings, drawingRunning, invalidateDrawingSettings } from "../components/modules/page-drawing/drawing-background.js";
 
 const sample = { width: 800, height: 1600, strokes: [{ color: "#ff0000", width: 4, tool: "pen", points: [[10, 20], [30, 40]] }] };
 test("drawings validate geometry and bind records to the full URL", async () => {

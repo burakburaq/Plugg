@@ -1,13 +1,14 @@
-import { normalizeSettings } from "./modules/audio-settings.js";
+import { t } from "./modules/i18n.js";
+import { normalizeSettings } from "./components/modules/volume-booster/audio-settings.js";
 import { LAYOUT_KEY, normalizeLayout } from "./modules/module-layout.js";
-import { inspectFonts } from "./modules/font-inspector.js";
-import { handleDrawing, stopDrawings, drawingRunning, restoreDrawing, invalidateDrawingSettings } from "./modules/drawing-background.js";
-import { handleShortcuts, runShortcut, trackShortcutTab, resetShortcutTabs, forgetShortcutTab, replaceShortcutTab } from "./modules/shortcuts-background.js";
-import { handleDarkMode, getDarkSettings, stopDarkMode, fetchDarkResource, darkPageContext } from "./modules/dark-background.js";
-import { handleEditor, stopEditors, editorRunning } from "./modules/editor-background.js";
-import { handleVideo, stopVideos, videoRunning } from "./modules/video-background.js";
+import { inspectFonts } from "./components/modules/font-finder/font-inspector.js";
+import { handleDrawing, stopDrawings, drawingRunning, restoreDrawing, invalidateDrawingSettings } from "./components/modules/page-drawing/drawing-background.js";
+import { handleShortcuts, runShortcut, trackShortcutTab, resetShortcutTabs, forgetShortcutTab, replaceShortcutTab } from "./components/modules/keyboard-shortcuts/shortcuts-background.js";
+import { handleDarkMode, getDarkSettings, stopDarkMode, fetchDarkResource, darkPageContext } from "./components/modules/dark-mode/dark-background.js";
+import { handleEditor, stopEditors, editorRunning } from "./components/modules/page-editor/editor-background.js";
+import { handleVideo, stopVideos, videoRunning } from "./components/modules/video-tools/video-background.js";
 import { groupDomainTabs, captureFullPage } from "./modules/page-tools.js";
-import { DARK_KEY } from "./modules/dark-settings.js";
+import { DARK_KEY } from "./components/modules/dark-mode/dark-settings.js";
 
 let creating;
 const starting = new Map();
@@ -44,20 +45,20 @@ async function hasAudioDocument() {
   if (!chrome.runtime.getContexts || !chrome.offscreen) return false;
   const contexts = await chrome.runtime.getContexts({
     contextTypes: ["OFFSCREEN_DOCUMENT"],
-    documentUrls: [chrome.runtime.getURL("offscreen.html")]
+    documentUrls: [chrome.runtime.getURL("components/modules/volume-booster/offscreen.html")]
   });
   return contexts.length > 0;
 }
 
 async function ensureAudioDocument() {
-  if (!chrome.offscreen) throw new Error("Volume Booster bu tarayıcıda desteklenmiyor.");
+  if (!chrome.offscreen) throw new Error(t("common_volume_booster_is_not_supported_in_this"));
   if (creating) return creating;
   creating = (async () => {
     if (!await hasAudioDocument()) {
       await chrome.offscreen.createDocument({
-        url: "offscreen.html",
+        url: "components/modules/volume-booster/offscreen.html",
         reasons: ["USER_MEDIA"],
-        justification: "Sekme sesini popup kapalıyken de yükseltmek ve ekolayzır uygulamak."
+        justification: t("common_boost_and_equalize_tab_audio_while_popup")
       });
     }
     // The dev server may still be loading the document's module scripts.
@@ -68,7 +69,7 @@ async function ensureAudioDocument() {
       } catch {}
       await new Promise(resolve => setTimeout(resolve, 100));
     }
-    throw new Error("Ses motoru yüklenemedi. Eklentiyi yenileyip tekrar dene.");
+    throw new Error(t("common_could_not_load_audio_engine"));
   })();
   try { await creating; } finally { creating = undefined; }
 }
@@ -79,7 +80,7 @@ function defaults(tabId) {
 
 async function forward(message) {
   const response = await chrome.runtime.sendMessage({ ...message, target: "audio-engine" });
-  if (!response?.ok) throw new Error(response?.error || "Ses motoruna bağlanılamadı.");
+  if (!response?.ok) throw new Error(response?.error || t("common_could_not_connect_to_audio_engine"));
   return response.state;
 }
 
@@ -147,10 +148,10 @@ async function handleFont(message, sender) {
     await saveFontTabs(tabs);
     return { active: message.type === "font:started" };
   }
-  if (!Number.isInteger(message.tabId) || message.tabId < 0) throw new Error("Geçerli bir sekme seçilemedi.");
+  if (!Number.isInteger(message.tabId) || message.tabId < 0) throw new Error(t("common_could_not_select_valid_tab"));
   const action = { "font:status": "status", "font:stop": "stop", "font:prepare": "prepare" }[message.type];
-  if (!action) throw new Error("Bilinmeyen font işlemi.");
-  if (action === "prepare" && (typeof message.connectionName !== "string" || !message.connectionName.startsWith("font-finder:"))) throw new Error("Geçersiz font bağlantısı.");
+  if (!action) throw new Error(t("common_unknown_font_operation"));
+  if (action === "prepare" && (typeof message.connectionName !== "string" || !message.connectionName.startsWith("font-finder:"))) throw new Error(t("common_invalid_font_connection"));
   const tabs = await trackedFontTabs();
   if (action === "stop") {
     await stopFont(message.tabId);
@@ -158,10 +159,10 @@ async function handleFont(message, sender) {
     await saveFontTabs(tabs);
     return { active: false };
   }
-  if (!(await getLayout()).active.includes("font")) throw new Error("Yazı Tipi Bulucu pasif.");
+  if (!(await getLayout()).active.includes("font")) throw new Error(t("common_font_finder_is_inactive"));
   const results = await chrome.scripting.executeScript({ target: { tabId: message.tabId }, func: inspectFonts, args: [action, message.connectionName] });
   const state = (results.find(item => item.frameId === 0) || results[0])?.result;
-  if (!state) throw new Error("Font bulucuya bağlanılamadı.");
+  if (!state) throw new Error(t("common_could_not_connect_to_font_finder"));
   if (state.active) tabs.add(message.tabId); else tabs.delete(message.tabId);
   await saveFontTabs(tabs);
   return state;
@@ -170,7 +171,7 @@ async function handleFont(message, sender) {
 async function handleModules(message) {
   if (message.type === "modules:get") return getLayout();
   if (message.type === "modules:status") return runningModules();
-  if (message.type !== "modules:set") throw new Error("Bilinmeyen modül işlemi.");
+  if (message.type !== "modules:set") throw new Error(t("common_unknown_module_operation"));
   const before = await getLayout();
   const next = normalizeLayout(message.layout);
   // Commands are serialized: any pending start finishes before this cleanup.
@@ -202,13 +203,13 @@ async function startAudio(message) {
 
 async function handle(message) {
   if (message.type === "audio:idle") { await closeIdleAudio(); return; }
-  if (!Number.isInteger(message.tabId) || message.tabId < 0) throw new Error("Geçerli bir sekme seçilemedi.");
+  if (!Number.isInteger(message.tabId) || message.tabId < 0) throw new Error(t("common_could_not_select_valid_tab"));
   if (message.type !== "audio:stop" && !(await getLayout()).active.includes("volume")) {
     if (message.type === "audio:get") return defaults(message.tabId);
     throw new Error("Volume Booster pasif.");
   }
   if (message.type === "audio:start") return startAudio(message);
-  if (!["audio:get", "audio:set", "audio:stop"].includes(message.type)) throw new Error("Bilinmeyen ses işlemi.");
+  if (!["audio:get", "audio:set", "audio:stop"].includes(message.type)) throw new Error(t("common_unknown_audio_operation"));
   if (!await hasAudioDocument()) return defaults(message.tabId);
   const state = await forward({ ...message, settings: normalizeSettings(message.settings) });
   if (message.type === "audio:stop") await closeIdleAudio();
@@ -218,7 +219,7 @@ async function handle(message) {
 chrome.runtime.onMessage.addListener((message, sender, reply) => {
   if (sender.id !== chrome.runtime.id) return;
   const handler = { "audio-background": handle, "font-background": handleFont, "modules-background": handleModules, "drawing-background": drawingHandler, "shortcuts-background": shortcutsHandler,
-    "dark-background": darkHandler, "editor-background": editorHandler, "video-background": videoHandler, "page-tools-background": pageToolsHandler }[message?.target];
+    "dark-background": darkHandler, "editor-background": editorHandler, "video-background": videoHandler, "page-tools-background": pageToolsHandler, "color-background": colorHandler }[message?.target];
   if (!handler) return;
   // Independent read-only resource requests must not block control/cleanup commands.
   if (message.target === "dark-background" && ["dark:fetch", "dark:context"].includes(message.type)) {
@@ -233,13 +234,13 @@ chrome.runtime.onMessage.addListener((message, sender, reply) => {
 async function drawingHandler(message, sender) {
   if (!(await getLayout()).active.includes("drawing") && !["draw:save-url", "draw:save-custom"].includes(message.type)) {
     if (message.type === "draw:state" && sender?.tab) { if (message.active) await stopDrawings(sender.tab.id); return; }
-    throw new Error("Sayfaya Çizim pasif.");
+    throw new Error(t("common_draw_on_page_is_inactive"));
   }
   return handleDrawing(message, sender);
 }
 
 async function shortcutsHandler(message) {
-  if (!(await getLayout()).active.includes("shortcuts")) throw new Error("Klavye Kısayolları pasif.");
+  if (!(await getLayout()).active.includes("shortcuts")) throw new Error(t("common_keyboard_shortcuts_is_inactive"));
   return handleShortcuts(message);
 }
 
@@ -253,21 +254,38 @@ async function darkHandler(message, sender) {
 async function editorHandler(message, sender) {
   if (!(await getLayout()).active.includes("editor")) {
     if (message.type === "editor:state" && sender?.tab) { if (message.active) await stopEditors(sender.tab.id); return; }
-    throw new Error("Sayfa Editörü pasif.");
+    throw new Error(t("common_page_editor_is_inactive"));
   }
   return handleEditor(message, sender);
 }
 
 async function pageToolsHandler(message) {
   const module = { "capture:full": "screenshot", "groups:domain": "groups" }[message.type];
-  if (!module || !(await getLayout()).active.includes(module)) throw new Error("Modül pasif veya işlem geçersiz.");
+  if (!module || !(await getLayout()).active.includes(module)) throw new Error(t("common_module_is_inactive_or_operation_is_invalid"));
   if (module === "groups") return groupDomainTabs();
-  if (!Number.isInteger(message.tabId) || message.tabId < 0) throw new Error("Geçerli bir sekme seçilemedi.");
+  if (!Number.isInteger(message.tabId) || message.tabId < 0) throw new Error(t("common_could_not_select_valid_tab"));
   return captureFullPage(message.tabId);
 }
 
+async function colorHandler(message, sender) {
+  if (!Number.isInteger(sender.tab?.id) || !(await getLayout()).active.includes("color")) throw new Error(t("common_color_picker_is_unavailable"));
+  if (message.type === "color:save" && /^#[\da-f]{6}$/i.test(message.color)) {
+    const now = Date.now();
+    const { colorHistory } = await chrome.storage.local.get("colorHistory");
+    const history = Array.isArray(colorHistory) ? colorHistory : [];
+    const recent = history.filter(item => item && /^#[\da-f]{6}$/i.test(item.color) && Number.isFinite(item.time) && item.time > now - 21600000 && item.time <= now);
+    recent.unshift({ color: message.color.toLowerCase(), time: now });
+    await chrome.storage.local.set({ colorHistory: recent.slice(0, 5) });
+    return;
+  }
+  if (message.type !== "color:capture") throw new Error(t("common_invalid_color_picker_operation"));
+  const tab = await chrome.tabs.get(sender.tab.id);
+  if (!tab.active) throw new Error(t("common_tab_is_not_active"));
+  return chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
+}
+
 async function videoHandler(message, sender) {
-  if (!(await getLayout()).active.includes("video")) throw new Error("Video Araçları pasif.");
+  if (!(await getLayout()).active.includes("video")) throw new Error(t("common_video_tools_is_inactive"));
   return handleVideo(message, sender);
 }
 

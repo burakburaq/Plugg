@@ -12,12 +12,16 @@ Kesin bağımlılık sürümleri ve geçişli bağımlılıklar `package-lock.js
 | React DOM | 19.3.0 | MIT | [facebook/react](https://github.com/facebook/react/tree/main/packages/react-dom) |
 | Scheduler | 0.28.0 | MIT | [facebook/react](https://github.com/facebook/react/tree/main/packages/scheduler) |
 | Dark Reader | 4.9.133 | MIT | [darkreader/darkreader](https://github.com/darkreader/darkreader) |
+| Bebas Neue | Regular | SIL Open Font License 1.1 | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/bebasneue) |
+| Barlow Condensed | Light | SIL Open Font License 1.1 | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/barlowcondensed) |
 
 Derleme bu paketlerin tam lisans metinlerini kurulu bağımlılıklardan okuyarak
 `LICENSES/` klasörüne ekler. Dark Reader lisansı ayrıca
 `vendor/darkreader-LICENSE.txt` olarak korunur. Dark Reader motorunun taşıma
 katmanı yerel kapsama alınır ve kapalı proxy kodunun MV3 CSP altında enjekte
 edilmesi engellenir; özgün lisans ve telif bildirimleri korunur.
+Bebas Neue lisansı `fonts/BebasNeue-OFL.txt` içinde dağıtılır.
+Barlow Condensed lisansı `fonts/BarlowCondensed-OFL.txt` içinde dağıtılır.
 
 ## Geliştirme araçları
 

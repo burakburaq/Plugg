@@ -1,0 +1,1406 @@
+{
+  "modules_gestureflow": { "message": "GestureFlow" },
+  "settings_title": {
+    "message": "Settings"
+  },
+  "settings_theme_dull": { "message": "dull" },
+  "settings_theme_win8": { "message": "win8" },
+  "settings_empty": {
+    "message": "Settings will appear here."
+  },
+  "clock_good_afternoon": {
+    "message": "Good afternoon"
+  },
+  "clock_good_evening": {
+    "message": "Good evening"
+  },
+  "clock_good_morning": {
+    "message": "Good morning"
+  },
+  "clock_good_night": {
+    "message": "Good night"
+  },
+  "color_picker_copied": {
+    "message": "Copied"
+  },
+  "color_picker_copy_hex": {
+    "message": "Copy HEX code"
+  },
+  "color_picker_copy_rgb": {
+    "message": "Copy RGB code"
+  },
+  "color_picker_could_not_copy": {
+    "message": "Could not copy"
+  },
+  "color_picker_keep_indicators": {
+    "message": "Keep color indicators"
+  },
+  "color_picker_no_recent_colors": {
+    "message": "No colors selected in the last 6 hours."
+  },
+  "color_picker_start_error": {
+    "message": "Could not start the color picker. Try a regular web page."
+  },
+  "common_add": {
+    "message": "Add"
+  },
+  "common_background": {
+    "message": "Background"
+  },
+  "common_boost_and_equalize_tab_audio_while_popup": {
+    "message": "Boost and equalize tab audio while the popup is closed."
+  },
+  "common_brightness": {
+    "message": "Brightness"
+  },
+  "common_clear": {
+    "message": "Clear"
+  },
+  "common_clipboard_error": {
+    "message": "Could not copy to clipboard."
+  },
+  "common_close": {
+    "message": "Close"
+  },
+  "common_color_picker_is_unavailable": {
+    "message": "Color Picker is unavailable."
+  },
+  "common_contrast": {
+    "message": "Contrast"
+  },
+  "common_copy_value": {
+    "message": "Copy $1"
+  },
+  "common_could_not_connect_to_audio_engine": {
+    "message": "Could not connect to the audio engine."
+  },
+  "common_could_not_connect_to_font_finder": {
+    "message": "Could not connect to Font Finder."
+  },
+  "common_could_not_create_image": {
+    "message": "Could not create the image."
+  },
+  "common_could_not_load_audio_engine": {
+    "message": "Could not load the audio engine. Reload the extension and try again."
+  },
+  "common_could_not_select_valid_tab": {
+    "message": "Could not select a valid tab."
+  },
+  "common_custom_shortcut_1": {
+    "message": "Custom shortcut 1"
+  },
+  "common_custom_shortcut_2": {
+    "message": "Custom shortcut 2"
+  },
+  "common_custom_shortcut_3": {
+    "message": "Custom shortcut 3"
+  },
+  "common_custom_shortcut_4": {
+    "message": "Custom shortcut 4"
+  },
+  "common_custom_shortcut_5": {
+    "message": "Custom shortcut 5"
+  },
+  "common_custom_shortcut_6": {
+    "message": "Custom shortcut 6"
+  },
+  "common_custom_shortcut_7": {
+    "message": "Custom shortcut 7"
+  },
+  "common_custom_shortcut_8": {
+    "message": "Custom shortcut 8"
+  },
+  "common_download_png": {
+    "message": "Download PNG"
+  },
+  "common_draw_on_page_is_inactive": {
+    "message": "Draw on Page is inactive."
+  },
+  "common_finish": {
+    "message": "Finish"
+  },
+  "common_finish_editing": {
+    "message": "Finish editing"
+  },
+  "common_focus_timer": {
+    "message": "Focus timer"
+  },
+  "common_font_finder_is_inactive": {
+    "message": "Font Finder is inactive."
+  },
+  "common_invalid_color_picker_operation": {
+    "message": "Invalid color picker operation."
+  },
+  "common_invalid_font_connection": {
+    "message": "Invalid font connection."
+  },
+  "common_keyboard_shortcuts_is_inactive": {
+    "message": "Keyboard Shortcuts is inactive."
+  },
+  "common_link": {
+    "message": "Link"
+  },
+  "common_loading": {
+    "message": "Loading…"
+  },
+  "common_module_is_inactive_or_operation_is_invalid": {
+    "message": "The module is inactive or the operation is invalid."
+  },
+  "common_new_tab": {
+    "message": "New Tab"
+  },
+  "common_page_editor_is_inactive": {
+    "message": "Page Editor is inactive."
+  },
+  "common_preparing": {
+    "message": "Preparing…"
+  },
+  "common_quick_notes": {
+    "message": "Quick notes"
+  },
+  "common_reset": {
+    "message": "Reset"
+  },
+  "common_return_to_module_menu": {
+    "message": "Return to module menu"
+  },
+  "common_screenshot_permission_was_not_granted": {
+    "message": "Screenshot permission was not granted."
+  },
+  "common_tab_is_not_active": {
+    "message": "The tab is not active."
+  },
+  "common_try_again_on_regular_web_page": {
+    "message": "Try again on a regular web page."
+  },
+  "common_unknown_audio_operation": {
+    "message": "Unknown audio operation."
+  },
+  "common_unknown_font_operation": {
+    "message": "Unknown font operation."
+  },
+  "common_unknown_module": {
+    "message": "Unknown module"
+  },
+  "common_unknown_module_operation": {
+    "message": "Unknown module operation."
+  },
+  "common_value_copied": {
+    "message": "$1 copied."
+  },
+  "common_video_tools_is_inactive": {
+    "message": "Video Tools is inactive."
+  },
+  "common_volume_booster_is_not_supported_in_this": {
+    "message": "Volume Booster is not supported in this browser."
+  },
+  "common_weather": {
+    "message": "Weather"
+  },
+  "dark_mode_access_to_all_sites_was_not_granted": {
+    "message": "Access to all sites was not granted."
+  },
+  "dark_mode_could_not_apply_dark_mode_to_open": {
+    "message": "Could not apply dark mode to open pages. Reload and try again."
+  },
+  "dark_mode_could_not_apply_dark_mode_to_page": {
+    "message": "Could not apply dark mode to the page."
+  },
+  "dark_mode_could_not_load_style_resource": {
+    "message": "Could not load the style resource."
+  },
+  "dark_mode_could_not_read_settings": {
+    "message": "Could not read settings."
+  },
+  "dark_mode_could_not_save_dark_mode": {
+    "message": "Could not save dark mode."
+  },
+  "dark_mode_dark_mode_is_off": {
+    "message": "Dark Mode is off."
+  },
+  "dark_mode_dark_mode_on_all_sites": {
+    "message": "Dark mode on all sites"
+  },
+  "dark_mode_dark_mode_on_this_site": {
+    "message": "Dark mode on this site"
+  },
+  "dark_mode_invalid_page_context": {
+    "message": "Invalid page context."
+  },
+  "dark_mode_invalid_style_resource": {
+    "message": "Invalid style resource."
+  },
+  "dark_mode_off": {
+    "message": "Off"
+  },
+  "dark_mode_on": {
+    "message": "On"
+  },
+  "dark_mode_permission_to_access_all_sites_is_required": {
+    "message": "Permission to access all sites is required."
+  },
+  "dark_mode_reset_appearance": {
+    "message": "Reset appearance"
+  },
+  "dark_mode_site_access_was_removed": {
+    "message": "Site access was removed."
+  },
+  "dark_mode_style_resource_is_too_large": {
+    "message": "The style resource is too large."
+  },
+  "dark_mode_text_color": {
+    "message": "Text color"
+  },
+  "dark_mode_unknown_dark_mode_operation": {
+    "message": "Unknown dark mode operation."
+  },
+  "dark_mode_warmth": {
+    "message": "Warmth"
+  },
+  "drawing_close_drawing": {
+    "message": "Close drawing"
+  },
+  "drawing_continue_drawing": {
+    "message": "Continue drawing"
+  },
+  "drawing_could_not_connect_to_drawing_module": {
+    "message": "Could not connect to the drawing module."
+  },
+  "drawing_could_not_connect_to_drawing_page": {
+    "message": "Could not connect to the drawing page."
+  },
+  "drawing_could_not_create_png": {
+    "message": "Could not create PNG."
+  },
+  "drawing_could_not_save_drawing": {
+    "message": "Could not save drawing."
+  },
+  "drawing_custom_save_created": {
+    "message": "Custom save created."
+  },
+  "drawing_delete_save": {
+    "message": "Delete save"
+  },
+  "drawing_drawing_is_too_large": {
+    "message": "Drawing is too large."
+  },
+  "drawing_drawing_limit_reached": {
+    "message": "Drawing limit reached. You can save it as PNG."
+  },
+  "drawing_drawing_off": {
+    "message": "Drawing off"
+  },
+  "drawing_drawing_on": {
+    "message": "Drawing on"
+  },
+  "drawing_drawing_tools": {
+    "message": "Drawing tools"
+  },
+  "drawing_edit": {
+    "message": "Edit"
+  },
+  "drawing_enter_save_name": {
+    "message": "Enter a save name."
+  },
+  "drawing_eraser": {
+    "message": "Eraser"
+  },
+  "drawing_invalid_drawing": {
+    "message": "Invalid drawing."
+  },
+  "drawing_invalid_drawing_point": {
+    "message": "Invalid drawing point."
+  },
+  "drawing_invalid_drawing_setting": {
+    "message": "Invalid drawing setting."
+  },
+  "drawing_invalid_drawing_state": {
+    "message": "Invalid drawing state."
+  },
+  "drawing_invalid_save": {
+    "message": "Invalid save."
+  },
+  "drawing_load_on_page": {
+    "message": "Load on page"
+  },
+  "drawing_pen": {
+    "message": "Pen"
+  },
+  "drawing_pen_color": {
+    "message": "Pen color"
+  },
+  "drawing_pen_width": {
+    "message": "Pen width"
+  },
+  "drawing_restore_drawings_automatically": {
+    "message": "Restore drawings automatically"
+  },
+  "drawing_save": {
+    "message": "Save"
+  },
+  "drawing_save_as_custom": {
+    "message": "Save as custom"
+  },
+  "drawing_save_independently_of_url": {
+    "message": "Save independently of URL"
+  },
+  "drawing_save_name": {
+    "message": "Save name"
+  },
+  "drawing_save_not_found": {
+    "message": "Save not found."
+  },
+  "drawing_save_to_url": {
+    "message": "Save to URL"
+  },
+  "drawing_saved_drawings": {
+    "message": "Saved drawings"
+  },
+  "drawing_saved_for_this_url": {
+    "message": "Saved for this URL."
+  },
+  "drawing_saved_to_page": {
+    "message": "Saved to page."
+  },
+  "drawing_select_save": {
+    "message": "Select a save"
+  },
+  "drawing_show_automatically_on_pages_with_drawings": {
+    "message": "Show automatically on pages with drawings"
+  },
+  "drawing_site_access_is_required_for_automatic_loading": {
+    "message": "Site access is required for automatic loading."
+  },
+  "drawing_site_access_was_not_granted": {
+    "message": "Site access was not granted. You can draw manually."
+  },
+  "drawing_symbol": {
+    "message": ". Draw using the page toolbar. Strokes are saved automatically for this URL."
+  },
+  "drawing_turn_on_drawing_mode": {
+    "message": "Turn on drawing mode"
+  },
+  "drawing_turn_on_drawing_mode_first": {
+    "message": "Turn on drawing mode first."
+  },
+  "drawing_undo": {
+    "message": "Undo"
+  },
+  "drawing_unknown_drawing_operation": {
+    "message": "Unknown drawing operation."
+  },
+  "drawing_value1_strokes_value2": {
+    "message": "$1 strokes · $2"
+  },
+  "drawing_viewing": {
+    "message": "Viewing"
+  },
+  "extension_description": {
+    "message": "A collection of useful tools in one extension."
+  },
+  "extension_manager_active": {
+    "message": "Active"
+  },
+  "extension_manager_alphabetical": {
+    "message": "Alphabetical"
+  },
+  "extension_manager_chrome_connection_unavailable": {
+    "message": "Chrome connection unavailable"
+  },
+  "extension_manager_chrome_does_not_allow_enabling_this_extension": {
+    "message": "Chrome does not allow enabling this extension"
+  },
+  "extension_manager_could_not_be_disabled": {
+    "message": "could not be disabled"
+  },
+  "extension_manager_could_not_be_enabled": {
+    "message": "could not be enabled"
+  },
+  "extension_manager_could_not_load_extensions": {
+    "message": "Could not load extensions. Close and reopen this module."
+  },
+  "extension_manager_disable": {
+    "message": "disable"
+  },
+  "extension_manager_disable_extension": {
+    "message": "Disable extension"
+  },
+  "extension_manager_disabled": {
+    "message": "disabled"
+  },
+  "extension_manager_enable": {
+    "message": "enable"
+  },
+  "extension_manager_enable_extension": {
+    "message": "Enable extension"
+  },
+  "extension_manager_enabled": {
+    "message": "enabled"
+  },
+  "extension_manager_extension_management": {
+    "message": "Extension management"
+  },
+  "extension_manager_inactive": {
+    "message": "Inactive"
+  },
+  "extension_manager_installed_extensions": {
+    "message": "Installed extensions"
+  },
+  "extension_manager_load_extension_using_load_unpacked_on_chromes": {
+    "message": "Load the extension using Load unpacked on Chrome's Extensions page to use this page."
+  },
+  "extension_manager_locked_by_chrome": {
+    "message": "Locked by Chrome"
+  },
+  "extension_manager_no_description_is_available_for_this_extension": {
+    "message": "No description is available for this extension."
+  },
+  "extension_manager_no_other_extensions_yet": {
+    "message": "No other extensions yet"
+  },
+  "extension_manager_other_extensions_you_add_to_chrome_appear": {
+    "message": "Other extensions you add to Chrome appear here."
+  },
+  "extension_manager_sort_extensions": {
+    "message": "Sort extensions"
+  },
+  "extension_manager_v": {
+    "message": "v"
+  },
+  "extension_manager_value1_extensions_value2_enabled": {
+    "message": "$1 extensions · $2 enabled"
+  },
+  "extension_manager_value1_value2": {
+    "message": "$1 $2. Chrome may have blocked the action or confirmation was canceled."
+  },
+  "focus_timer_duration": {
+    "message": "Duration"
+  },
+  "focus_timer_focus_on_task": {
+    "message": "Focus on a task"
+  },
+  "focus_timer_focus_timer_controls": {
+    "message": "Focus timer controls"
+  },
+  "focus_timer_focus_timer_progress": {
+    "message": "Focus timer progress"
+  },
+  "focus_timer_min": {
+    "message": "min"
+  },
+  "focus_timer_pause": {
+    "message": "Pause"
+  },
+  "focus_timer_reset_timer": {
+    "message": "Reset timer"
+  },
+  "focus_timer_restart": {
+    "message": "Restart"
+  },
+  "focus_timer_start": {
+    "message": "Start"
+  },
+  "focus_timer_take_time_for_yourself": {
+    "message": "Take time for yourself"
+  },
+  "focus_timer_time_is_up": {
+    "message": "Time is up"
+  },
+  "font_finder_aa": {
+    "message": "Aa"
+  },
+  "font_finder_could_not_connect_to_page": {
+    "message": "Could not connect to the page. Close and reopen this module."
+  },
+  "font_finder_font_finder_closes_when_you_return_to": {
+    "message": "Font finder closes when you return to the menu or close the popup."
+  },
+  "font_finder_font_finder_is_off": {
+    "message": "Font finder is off"
+  },
+  "font_finder_hover_over_text": {
+    "message": "Hover over text"
+  },
+  "font_finder_hover_over_text_while_this_screen_is": {
+    "message": "Hover over text while this screen is open. The font name, size and weight appear next to the pointer."
+  },
+  "font_finder_try_regular_web_page": {
+    "message": "Try a regular web page. Chrome pages and the Web Store do not allow font inspection."
+  },
+  "font_finder_unavailable_on_this_page": {
+    "message": "Unavailable on this page"
+  },
+  "module_menu_active_modules": {
+    "message": "Active modules"
+  },
+  "module_menu_edit_modules": {
+    "message": "Edit modules"
+  },
+  "module_menu_inactive_modules": {
+    "message": "Inactive modules"
+  },
+  "module_menu_no_active_modules": {
+    "message": "No active modules"
+  },
+  "module_menu_no_inactive_modules": {
+    "message": "No inactive modules"
+  },
+  "module_menu_running_in_background": {
+    "message": " · Running in background"
+  },
+  "module_menu_running_in_background_2": {
+    "message": "Running in background"
+  },
+  "module_menu_stop_editing_modules": {
+    "message": "Stop editing modules"
+  },
+  "modules_click_and_edit_page_text": {
+    "message": "Click and edit page text"
+  },
+  "modules_color_picker": {
+    "message": "Color Picker"
+  },
+  "modules_could_not_read_module_layout": {
+    "message": "Could not read module layout. Reload the extension in Chrome and try again."
+  },
+  "modules_could_not_save_module_layout": {
+    "message": "Could not save module layout."
+  },
+  "modules_custom_shortcuts_and_previous_tab_navigation": {
+    "message": "Custom shortcuts and previous tab navigation"
+  },
+  "modules_customizable_dark_appearance_for_sites": {
+    "message": "Customizable dark appearance for sites"
+  },
+  "modules_dark_mode": {
+    "message": "Dark Mode"
+  },
+  "modules_download_entire_page_as_one_png": {
+    "message": "Download the entire page as one PNG"
+  },
+  "modules_draw_on_page": {
+    "message": "Draw on Page"
+  },
+  "modules_draw_on_page_save_and_download_png": {
+    "message": "Draw on the page, save and download PNG"
+  },
+  "modules_enable_and_disable_extensions": {
+    "message": "Enable and disable extensions"
+  },
+  "modules_extension_manager": {
+    "message": "Extension Manager"
+  },
+  "modules_find_font_under_pointer": {
+    "message": "Find the font under the pointer"
+  },
+  "modules_font_finder": {
+    "message": "Font Finder"
+  },
+  "modules_group_tabs_by_domain": {
+    "message": "Group tabs by domain"
+  },
+  "modules_keyboard_shortcuts": {
+    "message": "Keyboard Shortcuts"
+  },
+  "modules_page_capture": {
+    "message": "Page Capture"
+  },
+  "modules_page_editor": {
+    "message": "Page Editor"
+  },
+  "modules_pick_and_copy_color_from_screen": {
+    "message": "Pick and copy a color from the screen"
+  },
+  "modules_qr_creator": {
+    "message": "QR Creator"
+  },
+  "modules_qr_designs_for_text_and_links": {
+    "message": "QR designs for text and links"
+  },
+  "modules_search_filters_and_customizable_layout": {
+    "message": "Search, filters and customizable layout"
+  },
+  "modules_tab_audio_equalizer_and_presets": {
+    "message": "Tab audio, equalizer and presets"
+  },
+  "modules_tab_groups": {
+    "message": "Tab Groups"
+  },
+  "modules_video_tools": {
+    "message": "Video Tools"
+  },
+  "modules_video_zoom_and_image_settings": {
+    "message": "Video zoom and image settings"
+  },
+  "modules_volume_booster": {
+    "message": "Volume Booster"
+  },
+  "new_tab_add_widgets": {
+    "message": "Add widgets. Drag to move them and resize from the corner."
+  },
+  "new_tab_advanced_filters": {
+    "message": "Advanced filters"
+  },
+  "new_tab_break_your_day_into_small_steps": {
+    "message": "Break your day into small steps"
+  },
+  "new_tab_changes_are_saved_automatically": {
+    "message": "Changes are saved automatically."
+  },
+  "new_tab_clear": {
+    "message": "Clear"
+  },
+  "new_tab_clock": {
+    "message": "Clock"
+  },
+  "new_tab_clock_and_daily_greeting": {
+    "message": "Clock and daily greeting"
+  },
+  "new_tab_close_message": {
+    "message": "Close message"
+  },
+  "new_tab_could_not_open_new_tab": {
+    "message": "Could not open the new tab."
+  },
+  "new_tab_could_not_open_new_tab_2": {
+    "message": "Could not open the new tab. Reload the extension in Chrome and try again."
+  },
+  "new_tab_could_not_read_layout": {
+    "message": "Could not read layout. Reload the page."
+  },
+  "new_tab_could_not_save_changes": {
+    "message": "Could not save changes. Try again."
+  },
+  "new_tab_current_weather_in_your_city": {
+    "message": "Current weather in your city"
+  },
+  "new_tab_customize_new_tab": {
+    "message": "Customize new tab"
+  },
+  "new_tab_drizzle": {
+    "message": "Drizzle"
+  },
+  "new_tab_edit_new_tab": {
+    "message": "Edit new tab"
+  },
+  "new_tab_edit_your_new_tab": {
+    "message": "Edit your new tab"
+  },
+  "new_tab_enter_example": {
+    "message": "Enter example.com or example.com/topic in the site field."
+  },
+  "new_tab_enter_search_term_or_filter": {
+    "message": "Enter a search term or filter."
+  },
+  "new_tab_enter_valid_web_address": {
+    "message": "Enter a valid web address."
+  },
+  "new_tab_foggy": {
+    "message": "Foggy"
+  },
+  "new_tab_google_and_advanced_search": {
+    "message": "Google and advanced search"
+  },
+  "new_tab_make_time_for_task": {
+    "message": "Make time for a task"
+  },
+  "new_tab_new_tabs_are_customized_while_this_module": {
+    "message": "New tabs are customized while this module is active."
+  },
+  "new_tab_open_new_tab": {
+    "message": "Open new tab"
+  },
+  "new_tab_partly_cloudy": {
+    "message": "Partly cloudy"
+  },
+  "new_tab_quick_access_to_favorite_sites": {
+    "message": "Quick access to favorite sites"
+  },
+  "new_tab_quickly_jot_down_your_thoughts": {
+    "message": "Quickly jot down your thoughts"
+  },
+  "new_tab_rainy": {
+    "message": "Rainy"
+  },
+  "new_tab_reset_layout": {
+    "message": "Reset layout"
+  },
+  "new_tab_search": {
+    "message": "Search"
+  },
+  "new_tab_shortcuts": {
+    "message": "Shortcuts"
+  },
+  "new_tab_site_and_file_type_filters": {
+    "message": "Site and file type filters"
+  },
+  "new_tab_snowy": {
+    "message": "Snowy"
+  },
+  "new_tab_space_of_your_own": {
+    "message": "A space of your own. Add widgets using the gear."
+  },
+  "new_tab_space_of_your_own_2": {
+    "message": "A SPACE OF YOUR OWN"
+  },
+  "new_tab_tasks": {
+    "message": "Tasks"
+  },
+  "new_tab_thunderstorms": {
+    "message": "Thunderstorms"
+  },
+  "new_tab_use_gear_on_new_tab_to_add": {
+    "message": "Use the gear on the new tab to add a clock, search, shortcuts, tasks, notes, weather and focus timer. Move and resize widgets; the layout is saved automatically."
+  },
+  "page_capture_capturing": {
+    "message": "Capturing…"
+  },
+  "page_capture_could_not_capture_page": {
+    "message": "Could not capture the page."
+  },
+  "page_capture_download_full_page_as_png": {
+    "message": "Download full page as PNG"
+  },
+  "page_capture_entire_page_is_downloaded_as_one_png": {
+    "message": "The entire page is downloaded as one PNG. Chrome briefly displays a debugging notification during capture."
+  },
+  "page_capture_value1_value2_downloading_png": {
+    "message": "$1 × $2 · Downloading PNG."
+  },
+  "page_editor_changes_are_temporary_in_this_tab_and": {
+    "message": "Changes are temporary in this tab and disappear when the page reloads."
+  },
+  "page_editor_click_text_to_change_it": {
+    "message": "Click text to change it. Links do not open on left click while editing. Press Esc or the Finish button to restore links."
+  },
+  "page_editor_click_text_to_edit_esc_to_finish": {
+    "message": "Click text to edit · Esc to finish"
+  },
+  "page_editor_could_not_open_editor": {
+    "message": "Could not open editor."
+  },
+  "page_editor_could_not_open_page_editor": {
+    "message": "Could not open Page Editor."
+  },
+  "page_editor_could_not_read_page": {
+    "message": "Could not read the page."
+  },
+  "page_editor_edit_text": {
+    "message": "Edit text"
+  },
+  "page_editor_unknown_editing_operation": {
+    "message": "Unknown editing operation."
+  },
+  "qr_creator_content": {
+    "message": "Content"
+  },
+  "qr_creator_content_type": {
+    "message": "Content type"
+  },
+  "qr_creator_could_not_get_current_page_url": {
+    "message": "Could not get the current page URL."
+  },
+  "qr_creator_create_qr": {
+    "message": "Create QR"
+  },
+  "qr_creator_design": {
+    "message": "Design"
+  },
+  "qr_creator_enter_qr_content": {
+    "message": "Enter QR content…"
+  },
+  "qr_creator_error_correction": {
+    "message": "Error correction"
+  },
+  "qr_creator_high": {
+    "message": "High"
+  },
+  "qr_creator_highest": {
+    "message": "Highest"
+  },
+  "qr_creator_low": {
+    "message": "Low"
+  },
+  "qr_creator_medium": {
+    "message": "Medium"
+  },
+  "qr_creator_qr_color": {
+    "message": "QR color"
+  },
+  "qr_creator_qr_generation_is_not_available_yet": {
+    "message": "QR generation is not available yet."
+  },
+  "qr_creator_qr_preview_area": {
+    "message": "QR preview area"
+  },
+  "qr_creator_qr_preview_will_appear_here": {
+    "message": "QR preview will appear here"
+  },
+  "qr_creator_size": {
+    "message": "Size"
+  },
+  "qr_creator_text": {
+    "message": "Text"
+  },
+  "qr_creator_use_current_page": {
+    "message": "Use current page"
+  },
+  "search_about_site_filter": {
+    "message": "About the site filter"
+  },
+  "search_add_domain": {
+    "message": "Add domain"
+  },
+  "search_add_domain_e": {
+    "message": "Add domain (e.g. example.com)"
+  },
+  "search_advanced_search_filters": {
+    "message": "Advanced search filters"
+  },
+  "search_all": {
+    "message": "All"
+  },
+  "search_apply": {
+    "message": "Apply"
+  },
+  "search_domain": {
+    "message": "Domain"
+  },
+  "search_file_type": {
+    "message": "File type"
+  },
+  "search_file_type_filter": {
+    "message": "File type filter"
+  },
+  "search_image": {
+    "message": "Image"
+  },
+  "search_last_24_hours": {
+    "message": "Last 24 hours"
+  },
+  "search_other": {
+    "message": "Other"
+  },
+  "search_other_file_type": {
+    "message": "Other file type"
+  },
+  "search_search_filters": {
+    "message": "Search filters"
+  },
+  "search_search_google": {
+    "message": "Search Google"
+  },
+  "search_search_web": {
+    "message": "Search the web…"
+  },
+  "search_searches_pages_from_selected_site_indexed_by": {
+    "message": "Searches pages from the selected site indexed by Google."
+  },
+  "search_select_file_type": {
+    "message": "Select file type"
+  },
+  "search_site": {
+    "message": "Site"
+  },
+  "search_site_file_type_and_time_filters": {
+    "message": "Site, file type and time filters"
+  },
+  "search_site_filter": {
+    "message": "Site filter"
+  },
+  "search_this_year": {
+    "message": "This year"
+  },
+  "search_time": {
+    "message": "Time"
+  },
+  "search_time_filter": {
+    "message": "Time filter"
+  },
+  "search_you_can_add_up_to_6_custom": {
+    "message": "You can add up to 6 custom sites."
+  },
+  "shortcuts_action": {
+    "message": "Action"
+  },
+  "shortcuts_add_shortcut": {
+    "message": "Add shortcut"
+  },
+  "shortcuts_always_active": {
+    "message": "Always active"
+  },
+  "shortcuts_change_custom_shortcut_value1_keys_in_chrome": {
+    "message": "Change custom shortcut $1 keys in Chrome"
+  },
+  "shortcuts_change_keys_in_chrome": {
+    "message": "Change keys in Chrome"
+  },
+  "shortcuts_change_value1_keys": {
+    "message": "Change $1 keys"
+  },
+  "shortcuts_choose_valid_action": {
+    "message": "Choose a valid action."
+  },
+  "shortcuts_condition": {
+    "message": "Condition"
+  },
+  "shortcuts_could_not_open_chrome_shortcuts": {
+    "message": "Could not open Chrome shortcuts."
+  },
+  "shortcuts_could_not_preserve_form": {
+    "message": "Could not preserve the form. Try again."
+  },
+  "shortcuts_could_not_read_shortcuts": {
+    "message": "Could not read shortcuts."
+  },
+  "shortcuts_could_not_save_shortcut": {
+    "message": "Could not save shortcut."
+  },
+  "shortcuts_delete_shortcut": {
+    "message": "Delete shortcut"
+  },
+  "shortcuts_delete_value1_shortcut": {
+    "message": "Delete $1 shortcut"
+  },
+  "shortcuts_duplicate_tab": {
+    "message": "Duplicate tab"
+  },
+  "shortcuts_e": {
+    "message": "e.g. Return to tab"
+  },
+  "shortcuts_edit_custom_shortcut_value1_in_chrome": {
+    "message": "Edit custom shortcut $1 in Chrome"
+  },
+  "shortcuts_enter_name": {
+    "message": "Enter a name."
+  },
+  "shortcuts_enter_name_of_1_60_characters": {
+    "message": "Enter a name of 1–60 characters."
+  },
+  "shortcuts_enter_url_starting_with_http_or_https": {
+    "message": "Enter a URL starting with http:// or https://."
+  },
+  "shortcuts_inactive_while_typing": {
+    "message": "Inactive while typing"
+  },
+  "shortcuts_invalid_shortcut": {
+    "message": "Invalid shortcut."
+  },
+  "shortcuts_invalid_shortcut_condition": {
+    "message": "Invalid shortcut condition."
+  },
+  "shortcuts_invalid_shortcut_slot": {
+    "message": "Invalid shortcut slot."
+  },
+  "shortcuts_move_left_in_tab_bar": {
+    "message": "Move left in the tab bar"
+  },
+  "shortcuts_move_right_in_tab_bar": {
+    "message": "Move right in the tab bar"
+  },
+  "shortcuts_n": {
+    "message": "N"
+  },
+  "shortcuts_name": {
+    "message": "Name"
+  },
+  "shortcuts_new_shortcut": {
+    "message": "New shortcut"
+  },
+  "shortcuts_only_while_typing": {
+    "message": "Only while typing"
+  },
+  "shortcuts_open_link": {
+    "message": "Open link"
+  },
+  "shortcuts_open_new_tab": {
+    "message": "Open a new tab"
+  },
+  "shortcuts_reload_extension_in_chrome_and_try_again": {
+    "message": "Reload the extension in Chrome and try again."
+  },
+  "shortcuts_remove_value1_shortcut": {
+    "message": "Remove $1 shortcut"
+  },
+  "shortcuts_return_to_previous_tab": {
+    "message": "Return to previous tab"
+  },
+  "shortcuts_return_to_previous_tab_2": {
+    "message": "Return to the previous tab"
+  },
+  "shortcuts_set_custom_shortcut_value1_keys": {
+    "message": "Set custom shortcut $1 keys"
+  },
+  "shortcuts_set_in_chrome": {
+    "message": "Set in Chrome"
+  },
+  "shortcuts_set_keys_in_chrome": {
+    "message": "Set keys in Chrome ↗"
+  },
+  "shortcuts_shortcut": {
+    "message": "Shortcut"
+  },
+  "shortcuts_shortcut_name": {
+    "message": "Shortcut name"
+  },
+  "shortcuts_shortcut_url": {
+    "message": "Shortcut URL"
+  },
+  "shortcuts_switch_between_last_two_tabs": {
+    "message": "Switch between the last two tabs"
+  },
+  "shortcuts_this_shortcut_slot_is_occupied": {
+    "message": "This shortcut slot is occupied."
+  },
+  "shortcuts_unassigned": {
+    "message": "Unassigned"
+  },
+  "shortcuts_unknown_shortcut_operation": {
+    "message": "Unknown shortcut operation."
+  },
+  "shortcuts_value1_condition": {
+    "message": "$1 condition"
+  },
+  "shortcuts_value1_settings": {
+    "message": "$1 settings"
+  },
+  "tab_groups_could_not_group_tabs": {
+    "message": "Could not group tabs."
+  },
+  "tab_groups_group_by_domain": {
+    "message": "Group by domain"
+  },
+  "tab_groups_grouped_value1_tabs_into_value2_domains": {
+    "message": "Grouped $1 tabs into $2 domains."
+  },
+  "tab_groups_grouping": {
+    "message": "Grouping…"
+  },
+  "tab_groups_tab_grouping_permission_was_not_granted": {
+    "message": "Tab grouping permission was not granted."
+  },
+  "tab_groups_tabs_in_this_window_are_grouped_by": {
+    "message": "Tabs in this window are grouped by domain. Pinned tabs stay in place."
+  },
+  "tab_groups_there_are_no_multiple_tabs_on_same": {
+    "message": "There are no multiple tabs on the same domain."
+  },
+  "tasks_add_small_step_for_today": {
+    "message": "Add a small step for today."
+  },
+  "tasks_add_value1": {
+    "message": "Add $1"
+  },
+  "tasks_delete_value1": {
+    "message": "Delete $1"
+  },
+  "tasks_delete_value2_value1": {
+    "message": "Delete $2 $1"
+  },
+  "tasks_new_value1": {
+    "message": "New $1"
+  },
+  "tasks_note": {
+    "message": "Note"
+  },
+  "tasks_note_2": {
+    "message": "note"
+  },
+  "tasks_note_3": {
+    "message": "note"
+  },
+  "tasks_optional": {
+    "message": "optional"
+  },
+  "tasks_task": {
+    "message": "Task"
+  },
+  "tasks_task_2": {
+    "message": "task"
+  },
+  "tasks_task_3": {
+    "message": "task"
+  },
+  "tasks_task_time": {
+    "message": "Task time"
+  },
+  "tasks_time": {
+    "message": "Time"
+  },
+  "tasks_today": {
+    "message": "Today"
+  },
+  "tasks_what_would_you_like_to_do": {
+    "message": "What would you like to do?"
+  },
+  "tasks_whats_on_your_mind": {
+    "message": "What's on your mind?"
+  },
+  "tasks_write_down_whats_on_your_mind": {
+    "message": "Write down what's on your mind."
+  },
+  "video_tools_aspect_ratio": {
+    "message": "Aspect ratio"
+  },
+  "video_tools_close_menu": {
+    "message": "Close menu"
+  },
+  "video_tools_close_video_tools": {
+    "message": "Close video tools"
+  },
+  "video_tools_could_not_enter_fullscreen_for_this_player": {
+    "message": "Could not enter fullscreen for this player."
+  },
+  "video_tools_could_not_open_video_tools": {
+    "message": "Could not open video tools."
+  },
+  "video_tools_could_not_open_video_tools_2": {
+    "message": "Could not open Video Tools."
+  },
+  "video_tools_could_not_read_tab": {
+    "message": "Could not read tab."
+  },
+  "video_tools_could_not_save_site_settings": {
+    "message": "Could not save site settings."
+  },
+  "video_tools_fill_screen": {
+    "message": "Fill screen"
+  },
+  "video_tools_fullscreen": {
+    "message": "Fullscreen"
+  },
+  "video_tools_horizontal_position": {
+    "message": "Horizontal position"
+  },
+  "video_tools_horizontal_stretch": {
+    "message": "Horizontal stretch"
+  },
+  "video_tools_image": {
+    "message": "Image"
+  },
+  "video_tools_invalid_remember_setting": {
+    "message": "Invalid remember setting."
+  },
+  "video_tools_invalid_site": {
+    "message": "Invalid site."
+  },
+  "video_tools_invalid_video_source": {
+    "message": "Invalid video source."
+  },
+  "video_tools_no_visible_video_was_found_on_this": {
+    "message": "No visible video was found on this page. Try opening the embedded video on its original site."
+  },
+  "video_tools_open_player_and_controls_in_fullscreen": {
+    "message": "Open player and controls in fullscreen"
+  },
+  "video_tools_open_video_tools": {
+    "message": "Open video tools"
+  },
+  "video_tools_remember_for_this_site": {
+    "message": "Remember for this site"
+  },
+  "video_tools_reopen_extension_to_save_settings": {
+    "message": "Reopen the extension to save settings."
+  },
+  "video_tools_saturation": {
+    "message": "Saturation"
+  },
+  "video_tools_sharpness": {
+    "message": "Sharpness"
+  },
+  "video_tools_toggle_player_fullscreen": {
+    "message": "Toggle player fullscreen"
+  },
+  "video_tools_toggle_zoom": {
+    "message": "Toggle zoom"
+  },
+  "video_tools_try_regular_web_page_containing_video": {
+    "message": "Try a regular web page containing a video."
+  },
+  "video_tools_unknown_video_operation": {
+    "message": "Unknown video operation."
+  },
+  "video_tools_vertical_position": {
+    "message": "Vertical position"
+  },
+  "video_tools_vertical_stretch": {
+    "message": "Vertical stretch"
+  },
+  "video_tools_video_settings": {
+    "message": "Video settings"
+  },
+  "video_tools_video_settings_pages": {
+    "message": "Video settings pages"
+  },
+  "video_tools_video_tools_is_not_active_in_this": {
+    "message": "Video Tools is not active in this tab."
+  },
+  "video_tools_works_in_this_tab_even_when_popup": {
+    "message": "Works in this tab even when the popup closes. It stops on reload; saved site settings load on the next manual start."
+  },
+  "video_tools_zoom": {
+    "message": "Zoom"
+  },
+  "video_tools_zoom_button_above_video_toggles_zoom": {
+    "message": "The ZOOM button above the video toggles zoom. Use the gear to adjust aspect ratio and image settings."
+  },
+  "volume_booster_1": {
+    "message": "1.0 normal"
+  },
+  "volume_booster_12_12_db": {
+    "message": "−12 / +12 dB"
+  },
+  "volume_booster_active_in_this_tab": {
+    "message": "Active in this tab"
+  },
+  "volume_booster_active_tab": {
+    "message": "Active tab"
+  },
+  "volume_booster_bass": {
+    "message": "Bass"
+  },
+  "volume_booster_could_not_apply_audio_settings": {
+    "message": "Could not apply audio settings. Try again."
+  },
+  "volume_booster_could_not_connect_to_audio_engine": {
+    "message": "Could not connect to the audio engine. Reload the extension in Chrome and try again."
+  },
+  "volume_booster_could_not_connect_to_tab_audio": {
+    "message": "Could not connect to tab audio"
+  },
+  "volume_booster_could_not_start_audio": {
+    "message": "Could not start audio. Play media in this tab and try again."
+  },
+  "volume_booster_could_not_stop_audio_processing": {
+    "message": "Could not stop audio processing. Try again."
+  },
+  "volume_booster_custom": {
+    "message": "Custom"
+  },
+  "volume_booster_electronic": {
+    "message": "Electronic"
+  },
+  "volume_booster_enable_tab_audio_processing": {
+    "message": "Enable tab audio processing"
+  },
+  "volume_booster_eq_preset": {
+    "message": "EQ preset"
+  },
+  "volume_booster_equalizer": {
+    "message": "Equalizer"
+  },
+  "volume_booster_flat": {
+    "message": "Flat"
+  },
+  "volume_booster_invalid_tab": {
+    "message": "Invalid tab."
+  },
+  "volume_booster_reading_tab": {
+    "message": "Reading tab…"
+  },
+  "volume_booster_rock": {
+    "message": "Rock"
+  },
+  "volume_booster_stop_processing_tab_audio": {
+    "message": "Stop processing tab audio"
+  },
+  "volume_booster_turn_on_switch_to_enable": {
+    "message": "Turn on the switch to enable"
+  },
+  "volume_booster_vocal": {
+    "message": "Vocal"
+  },
+  "volume_booster_volume": {
+    "message": "Volume"
+  },
+  "weather_change_city": {
+    "message": "Change city"
+  },
+  "weather_check_weather_in_your_city": {
+    "message": "Check the weather in your city."
+  },
+  "weather_choose_city_to_allow_weather_access": {
+    "message": "Choose a city to allow weather access."
+  },
+  "weather_city_name": {
+    "message": "City name"
+  },
+  "weather_city_not_found": {
+    "message": "City not found."
+  },
+  "weather_connection_timed_out": {
+    "message": "Connection timed out."
+  },
+  "weather_could_not_get_weather_data": {
+    "message": "Could not get weather data."
+  },
+  "weather_could_not_reach_weather_service": {
+    "message": "Could not reach the weather service."
+  },
+  "weather_feels_like": {
+    "message": "Feels like"
+  },
+  "weather_open_meteo": {
+    "message": "Open-Meteo"
+  },
+  "weather_refresh_weather": {
+    "message": "Refresh weather"
+  },
+  "weather_search_city": {
+    "message": "Search city"
+  },
+  "weather_select_city": {
+    "message": "Select city"
+  },
+  "weather_waiting_for_data": {
+    "message": "Waiting for data"
+  },
+  "weather_weather_access_permission_is_required": {
+    "message": "Weather access permission is required."
+  },
+  "weather_weather_details": {
+    "message": "Weather details"
+  },
+  "widgets_close_value1_window": {
+    "message": "Close $1 window"
+  },
+  "widgets_could_not_read_saved_data": {
+    "message": "Could not read saved data. Reload the page."
+  },
+  "widgets_could_not_save_change": {
+    "message": "Could not save the change."
+  },
+  "widgets_drag_or_use_arrow_keys_to_move": {
+    "message": "Drag or use arrow keys to move"
+  },
+  "widgets_drag_or_use_arrow_keys_to_resize": {
+    "message": "Drag or use arrow keys to resize"
+  },
+  "widgets_move_value1": {
+    "message": "Move $1"
+  },
+  "widgets_remove_value1": {
+    "message": "Remove $1"
+  },
+  "widgets_resize_value1": {
+    "message": "Resize $1"
+  },
+  "settings_theme": {
+    "message": "Theme"
+  },
+  "settings_theme_one": {
+    "message": "Theme 1"
+  },
+  "settings_theme_two": {
+    "message": "Theme 2"
+  },
+  "settings_language": {
+    "message": "Language"
+  },
+  "settings_language_english": {
+    "message": "English"
+  },
+  "settings_save_error": {
+    "message": "Could not save settings. Try again."
+  }
+}
