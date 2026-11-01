@@ -54,6 +54,13 @@ Tarayıcının dahili sayfalarında ve eklenti mağazalarında sayfa araçları 
 
 ## Kurulum
 
+GitHub Releases sayfasından tarayıcın için ZIP paketini indir ve çıkar.
+
+- **Chrome:** `chrome://extensions` sayfasında **Geliştirici modu**nu aç, **Paketlenmemiş öğe yükle** seçeneğine tıkla ve çıkardığın klasörü seç.
+- **Firefox:** `about:debugging#/runtime/this-firefox` sayfasında **Geçici eklenti yükle** seçeneğine tıkla ve çıkardığın klasördeki `manifest.json` dosyasını seç. Bu imzasız, geçici kurulum tarayıcı yeniden başlatılınca kaldırılır.
+
+### Kaynak koddan derleme
+
 Gereksinim: **Node.js 22.12+ (22 serisi) veya 24+** ve npm.
 
 ```sh
