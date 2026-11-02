@@ -5,11 +5,13 @@ export default function useMenuDrag({ menu, enabled, layout, onLayoutChange }) {
   const [dragging, setDragging] = useState(null);
   const [dropTarget, setDropTarget] = useState(null);
   const session = useRef(null);
+  const dragged = useRef(false);
   useEffect(() => () => session.current?.dispose(), []);
   useEffect(() => { if (!enabled) session.current?.cancel(); }, [enabled]);
 
   function start(event, id) {
     if (!enabled || event.button !== 0 || !event.isPrimary || session.current) return;
+    dragged.current = false;
     event.preventDefault();
     const source = event.currentTarget;
     const pointerId = event.pointerId;
@@ -111,6 +113,7 @@ export default function useMenuDrag({ menu, enabled, layout, onLayoutChange }) {
       if (!preview) {
         if (Math.hypot(x - startX, y - startY) < 4) return;
         preview = source.cloneNode(true);
+        dragged.current = true;
         preview.removeAttribute("id"); preview.removeAttribute("data-module-id");
         preview.setAttribute("aria-hidden", "true"); preview.tabIndex = -1;
         preview.classList.remove("is-dragging", "drop-before");
@@ -130,5 +133,10 @@ export default function useMenuDrag({ menu, enabled, layout, onLayoutChange }) {
     }
     session.current = { dispose, cancel: () => finish(false) };
   }
-  return { dragging, dropTarget, start, cancel: () => session.current?.cancel() };
+  function consumeClick(event) {
+    if (!event.detail || !dragged.current) return false;
+    dragged.current = false;
+    return true;
+  }
+  return { dragging, dropTarget, start, consumeClick, cancel: () => session.current?.cancel() };
 }

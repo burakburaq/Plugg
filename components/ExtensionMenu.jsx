@@ -9,7 +9,7 @@ export default function ExtensionMenu({ theme, themeConfig, modules, layout, onL
   const [editing, setEditing] = useState(false);
   const menu = useRef(null);
   const hoverTimer = useRef(null);
-  const { dragging, dropTarget, start: startDrag, cancel: clearDrag } = useMenuDrag({ menu, enabled: editing && ready && !saving, layout, onLayoutChange });
+  const { dragging, dropTarget, start: startDrag, consumeClick, cancel: clearDrag } = useMenuDrag({ menu, enabled: editing && ready && !saving, layout, onLayoutChange });
   const highlight = useMenuHighlight(menu, theme === "dull" && !dragging);
   const hues = useMemo(() => {
     if (!themeConfig.colorFromTitle) return {};
@@ -26,7 +26,7 @@ export default function ExtensionMenu({ theme, themeConfig, modules, layout, onL
 
   function schedulePreload(id, group) {
     cancelPreload();
-    if (group !== "active" || editing || !ready || saving) return;
+    if (!ready || saving) return;
     hoverTimer.current = setTimeout(() => { hoverTimer.current = null; onPreload(id); }, 200);
   }
 
@@ -40,7 +40,7 @@ export default function ExtensionMenu({ theme, themeConfig, modules, layout, onL
           className={`${dragging === id ? "is-dragging" : ""} ${dropTarget?.group === group && dropTarget.index === index ? "drop-before" : ""}`}
           onPointerDown={event => { cancelPreload(); startDrag(event, id); }}
           onMouseEnter={() => schedulePreload(id, group)} onMouseLeave={cancelPreload}
-          onSelect={() => { cancelPreload(); if (!editing && !saving) onSelect(id); }} />;
+          onSelect={event => { cancelPreload(); if (!saving && !consumeClick(event)) onSelect(id); }} />;
       })}
       {!layout[group].length && <p className="empty-module-group muted">{group === "active" ? t("module_menu_no_active_modules") : t("module_menu_no_inactive_modules")}</p>}
     </nav>;

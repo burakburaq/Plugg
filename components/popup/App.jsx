@@ -5,7 +5,7 @@ import ExtensionMenu from "../ExtensionMenu.jsx";
 import Settings from "../settings/Settings.jsx";
 import { MENU_THEMES, normalizeMenuTheme } from "../menuThemes.js";
 import gestureflowPicture from "../../assets/tile-pictures/gesture-flow.png";
-import { DEFAULT_LAYOUT, LAYOUT_KEY, normalizeLayout } from "../../modules/module-layout.js";
+import { DEFAULT_LAYOUT, LAYOUT_KEY, moveModule, normalizeLayout } from "../../modules/module-layout.js";
 import { loadModule, preloadModule, recentModules, normalizeSortOrder, RECENT_MODULES_KEY, SORT_ORDER_KEY } from "../../modules/module-loading.js";
 
 const ExtensionManager = lazy(() => loadModule("manager"));
@@ -160,8 +160,19 @@ export default function App() {
     layout.active.forEach(id => { if (id in recent) preloadModule(id); });
   }, [ready, layout]);
 
-  function selectModule(id) {
-    if (!ready || saving || !layout.active.includes(id)) return;
+  async function selectModule(id) {
+    if (!ready || saving || !modules.some(item => item.id === id)) return;
+    if (!layout.active.includes(id)) {
+      if (!layout.passive.includes(id)) return;
+      setSaving(true); setError("");
+      try {
+        const next = moveModule(layout, id, "active", layout.active.length);
+        const response = await chrome.runtime.sendMessage({ target: "modules-background", type: "modules:set", layout: next });
+        if (!response?.ok) throw new Error(response?.error || t("modules_could_not_save_module_layout"));
+        setLayout(normalizeLayout(response.layout));
+      } catch (error) { setError(error.message || t("modules_could_not_save_module_layout")); return; }
+      finally { setSaving(false); }
+    }
     recentOpens.current = { ...recentModules(recentOpens.current), [id]: Date.now() };
     void chrome.storage.session.set({ [RECENT_MODULES_KEY]: recentOpens.current }).catch(error => console.warn("Modül geçmişi kaydedilemedi.", error));
     setSelected(id);
