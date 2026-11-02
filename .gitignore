@@ -6,18 +6,7 @@ dist-chrome.dev/
 dist-firefox/
 .npm-cache/
 
-# Local configuration and credentials
-.env
-.env.*
-!.env.example
-*.pem
-*.key
-*.p12
-*.pfx
-*.crx
-*.xpi
-*.zip
-*.tgz
+
 
 # Logs, coverage and temporary artifacts
 *.log
@@ -33,7 +22,20 @@ playwright-report/
 *.tsbuildinfo
 *.bak
 
-# Editors and operating systems
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crx
+*.xpi
+*.zip
+*.tgz
+
+# Editors and os
 .idea/
 .vscode/
 *.swp
