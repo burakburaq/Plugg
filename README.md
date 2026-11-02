@@ -28,10 +28,10 @@ sekme sesini ayarla, sayfaya çizim yap veya yeni sekmeni özelleştir.
 | Yazı Tipi Bulucu | İmleç altındaki metnin CSS font ailesini, boyutunu ve kalınlığını göster. |
 | Renk Seçici | Ekrandan renk al, HEX/RGB değerini kopyala. |
 | Sekme Grupları | Aynı domaindeki sekmeleri grupla. |
-| Sayfa Editörü | Sayfadaki metinleri geçici olarak düzenle. |
+| Themes | Sayfa öğelerinin köşe yarıçapını ve metinlerini düzenle; değişiklikleri site için kaydet. |
 | QR Oluşturucu | **Tasarım aşamasında.** QR üretimi ve indirme henüz yok. |
 
-İlk kurulumda **Extension Manager** ve **Volume Booster** aktiftir. Ana menüdeki
+İlk kurulumda **Extension Manager**, **Volume Booster** ve **Themes** aktiftir. Ana menüdeki
 çarktan diğer modülleri aktifleştirebilir ve sürükleyerek sıralayabilirsin.
 Değişiklikler otomatik kaydedilir. Kodun önceden yüklenmesi modülü çalıştırmaz.
 

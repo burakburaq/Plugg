@@ -1,5 +1,5 @@
-export const MODULE_IDS = ["manager", "volume", "qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow", "themes"];
-export const DEFAULT_LAYOUT = { active: ["manager", "volume", "themes"], passive: ["qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] };
+export const MODULE_IDS = ["manager", "volume", "qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow", "themes"];
+export const DEFAULT_LAYOUT = { active: ["manager", "volume", "themes"], passive: ["qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow"] };
 export const LAYOUT_KEY = "moduleLayout";
 
 export function normalizeLayout(value) {
@@ -12,7 +12,7 @@ export function normalizeLayout(value) {
     seen.add(id);
     return true;
   });
-  const active = unique(value.active);
+  const active = unique(value.active.map(id => id === "editor" ? "themes" : id));
   const passive = unique(value.passive);
   // New modules remain passive until the user enables them.
   passive.push(...MODULE_IDS.filter(id => !seen.has(id)));

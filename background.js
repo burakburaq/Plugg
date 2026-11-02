@@ -5,12 +5,13 @@ import { inspectFonts } from "./components/modules/font-finder/font-inspector.js
 import { handleDrawing, stopDrawings, drawingRunning, restoreDrawing, invalidateDrawingSettings } from "./components/modules/page-drawing/drawing-background.js";
 import { handleShortcuts, runShortcut, trackShortcutTab, resetShortcutTabs, forgetShortcutTab, replaceShortcutTab } from "./components/modules/keyboard-shortcuts/shortcuts-background.js";
 import { handleDarkMode, getDarkSettings, stopDarkMode, fetchDarkResource, darkPageContext } from "./components/modules/dark-mode/dark-background.js";
-import { handleEditor, stopEditors, editorRunning } from "./components/modules/page-editor/editor-background.js";
 import { handleVideo, stopVideos, videoRunning } from "./components/modules/video-tools/video-background.js";
 import { groupDomainTabs, captureFullPage } from "./modules/page-tools.js";
 import { DARK_KEY } from "./components/modules/dark-mode/dark-settings.js";
 import { radiusEditor } from "./components/modules/themes/radius-editor.js";
 import { loadRadiusEntries } from "./components/modules/themes/radius-storage.js";
+import { textEditor } from "./components/modules/themes/text-editor.js";
+import { loadTextEntries } from "./components/modules/themes/text-storage.js";
 
 let creating;
 const starting = new Map();
@@ -123,7 +124,6 @@ async function runningModules() {
   return { volume: layout.active.includes("volume") && audio.activeCount > 0, font: layout.active.includes("font") && liveTabs.size > 0,
     drawing: layout.active.includes("drawing") && await drawingRunning(),
     dark: layout.active.includes("dark") && (await getDarkSettings()).enabled,
-    editor: layout.active.includes("editor") && await editorRunning(),
     video: layout.active.includes("video") && await videoRunning() };
 }
 
@@ -182,7 +182,6 @@ async function handleModules(message) {
   if (before.active.includes("drawing") && !next.active.includes("drawing")) await stopDrawings();
   if (before.active.includes("shortcuts") !== next.active.includes("shortcuts")) await resetShortcutTabs(next.active.includes("shortcuts"));
   if (before.active.includes("dark") && !next.active.includes("dark")) await stopDarkMode();
-  if (before.active.includes("editor") && !next.active.includes("editor")) await stopEditors();
   if (before.active.includes("video") && !next.active.includes("video")) await stopVideos();
   await chrome.storage.local.set({ [LAYOUT_KEY]: next });
   layoutPromise = Promise.resolve(next);
@@ -221,7 +220,7 @@ async function handle(message) {
 chrome.runtime.onMessage.addListener((message, sender, reply) => {
   if (sender.id !== chrome.runtime.id) return;
   const handler = { "audio-background": handle, "font-background": handleFont, "modules-background": handleModules, "drawing-background": drawingHandler, "shortcuts-background": shortcutsHandler,
-    "dark-background": darkHandler, "editor-background": editorHandler, "video-background": videoHandler, "page-tools-background": pageToolsHandler, "color-background": colorHandler }[message?.target];
+    "dark-background": darkHandler, "video-background": videoHandler, "page-tools-background": pageToolsHandler, "color-background": colorHandler }[message?.target];
   if (!handler) return;
   // Independent read-only resource requests must not block control/cleanup commands.
   if (message.target === "dark-background" && ["dark:fetch", "dark:context"].includes(message.type)) {
@@ -251,14 +250,6 @@ async function darkHandler(message, sender) {
   if (message.type === "dark:context") return darkPageContext(sender);
   if (message.type === "dark:fetch") return fetchDarkResource(message.url);
   return handleDarkMode(message);
-}
-
-async function editorHandler(message, sender) {
-  if (!(await getLayout()).active.includes("editor")) {
-    if (message.type === "editor:state" && sender?.tab) { if (message.active) await stopEditors(sender.tab.id); return; }
-    throw new Error(t("common_page_editor_is_inactive"));
-  }
-  return handleEditor(message, sender);
 }
 
 async function pageToolsHandler(message) {
@@ -312,7 +303,6 @@ chrome.runtime.onInstalled.addListener(initializeShortcutTabs);
 chrome.tabs.onRemoved.addListener((tabId, info) => {
   enqueue(async () => {
     if ((await getLayout()).active.includes("shortcuts")) await forgetShortcutTab(tabId, info);
-    if ((await getLayout()).active.includes("editor")) await stopEditors(tabId);
     if ((await getLayout()).active.includes("video")) await stopVideos(tabId);
     await handle({ type: "audio:stop", tabId });
     const tabs = await trackedFontTabs();
@@ -326,9 +316,10 @@ chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
     const url = change.url || tab.url;
     enqueue(async () => {
       if (!(await getLayout()).active.includes("themes") || !/^https?:\/\//.test(url)) return;
-      const { entries } = await loadRadiusEntries(url);
-      if (!entries.length) return;
-      await chrome.scripting.executeScript({ target: { tabId }, func: radiusEditor, args: ["restore", entries, url] });
+      await Promise.allSettled([
+        (async () => { const { entries } = await loadRadiusEntries(url); if (entries.length) await chrome.scripting.executeScript({ target: { tabId }, func: radiusEditor, args: ["restore", entries, url] }); })(),
+        (async () => { const { entries } = await loadTextEntries(url); if (entries.length) await chrome.scripting.executeScript({ target: { tabId }, func: textEditor, args: ["restore", entries, url] }); })()
+      ]);
     }).catch(() => {});
   }
   if (change.url && !change.status) {
@@ -348,7 +339,6 @@ chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
   enqueue(async () => {
     const tabs = await trackedFontTabs();
     if (tabs.delete(tabId)) await saveFontTabs(tabs);
-    if ((await getLayout()).active.includes("editor")) await stopEditors(tabId);
     if ((await getLayout()).active.includes("video")) await stopVideos(tabId);
     if ((await getLayout()).active.includes("drawing")) await stopDrawings(tabId);
   }).catch(() => {});

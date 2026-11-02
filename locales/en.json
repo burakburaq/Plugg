@@ -2,6 +2,7 @@
   "modules_gestureflow": { "message": "GestureFlow" },
   "modules_themes": { "message": "Themes" },
   "themes_radius_editor": { "message": "Border radius" },
+  "themes_text_content": { "message": "Text content" },
   "themes_unavailable": { "message": "This tool is unavailable on this page. Try a regular web page." },
   "themes_permission_required": { "message": "Site access is required to restore saved changes." },
   "themes_page_changed": { "message": "The page changed. Reopen Themes and try again." },

@@ -19,7 +19,6 @@ const KeyboardShortcuts = lazy(() => loadModule("shortcuts"));
 const FullPageCapture = lazy(() => loadModule("screenshot"));
 const DarkMode = lazy(() => loadModule("dark"));
 const DomainGroups = lazy(() => loadModule("groups"));
-const PageEditor = lazy(() => loadModule("editor"));
 const VideoTools = lazy(() => loadModule("video"));
 const GestureFlow = lazy(() => loadModule("gestureflow"));
 const Themes = lazy(() => loadModule("themes"));
@@ -47,8 +46,6 @@ const modules = [
     icon: <path d="M20 15A9 9 0 0 1 9 3a9 9 0 1 0 11 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /> },
   { id: "groups", title: t("modules_tab_groups"), description: t("modules_group_tabs_by_domain"), Component: DomainGroups,
     icon: <><rect x="2" y="3" width="8" height="7" rx="1" stroke="currentColor" strokeWidth="1.8" /><rect x="14" y="3" width="8" height="7" rx="1" stroke="currentColor" strokeWidth="1.8" /><path d="M6 13v3h12v-3m-6 3v5M8 21h8" stroke="currentColor" strokeWidth="1.8" /></> },
-  { id: "editor", title: t("modules_page_editor"), description: t("modules_click_and_edit_page_text"), Component: PageEditor,
-    icon: <><path d="M3 4h12M9 4v16M5 20h6m2-4 6-6 3 3-6 6-4 1 1-4Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></> },
   { id: "video", title: t("modules_video_tools"), description: t("modules_video_zoom_and_image_settings"), Component: VideoTools,
     icon: <><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="1.8" /><path d="m10 8 6 4-6 4V8Z" fill="currentColor" /></> },
   { id: "gestureflow", title: t("modules_gestureflow"), description: t("modules_gestureflow"), Component: GestureFlow, picture: gestureflowPicture,
@@ -68,7 +65,7 @@ export default function App() {
   const [settingsError, setSettingsError] = useState("");
   const [settingsReady, setSettingsReady] = useState(false);
   const [settingsSaving, setSettingsSaving] = useState(false);
-  const [running, setRunning] = useState({ volume: false, font: false, drawing: false, dark: false, editor: false, video: false });
+  const [running, setRunning] = useState({ volume: false, font: false, drawing: false, dark: false, video: false });
   const [lastModule, setLastModule] = useState(null);
   const [sortOrder, setSortOrder] = useState("enabled");
   const recentOpens = useRef({});
@@ -129,14 +126,14 @@ export default function App() {
 
   useEffect(() => {
     let mounted = true;
-    const revision = { volume: 0, font: 0, drawing: 0, dark: 0, editor: 0, video: 0 };
+    const revision = { volume: 0, font: 0, drawing: 0, dark: 0, video: 0 };
     const listener = (message, sender) => {
       if (sender.id !== chrome.runtime.id) return;
       if (message?.target === "audio-popup" && Number.isInteger(message.activeCount)) {
         revision.volume++;
         setRunning(current => ({ ...current, volume: message.activeCount > 0 }));
       }
-      if (message?.target === "modules-popup" && message.type === "modules:running" && ["font", "drawing", "dark", "editor", "video"].includes(message.module)) {
+      if (message?.target === "modules-popup" && message.type === "modules:running" && ["font", "drawing", "dark", "video"].includes(message.module)) {
         revision[message.module]++;
         setRunning(current => ({ ...current, [message.module]: !!message.active }));
       }
@@ -150,7 +147,6 @@ export default function App() {
           font: revision.font === currentRevision.font ? !!response.state?.font : current.font,
           drawing: revision.drawing === currentRevision.drawing ? !!response.state?.drawing : current.drawing,
           dark: revision.dark === currentRevision.dark ? !!response.state?.dark : current.dark,
-          editor: revision.editor === currentRevision.editor ? !!response.state?.editor : current.editor,
           video: revision.video === currentRevision.video ? !!response.state?.video : current.video
         }));
       }).catch(() => {});

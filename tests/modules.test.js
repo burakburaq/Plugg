@@ -4,6 +4,36 @@ import { DEFAULT_LAYOUT, normalizeLayout, moveModule } from "../modules/module-l
 import { MENU_THEMES, normalizeMenuTheme, resolveTileVariant } from "../components/menuThemes.js";
 import { radiusEditor } from "../components/modules/themes/radius-editor.js";
 import { hasRadiusChanges, loadRadiusEntries, mergeRadiusEntries, radiusStorageKey } from "../components/modules/themes/radius-storage.js";
+import { textEditor } from "../components/modules/themes/text-editor.js";
+import { hasTextChanges, mergeTextEntries, textStorageKey } from "../components/modules/themes/text-storage.js";
+
+test("text changes are independent of radius settings and require matching original text", async () => {
+  assert.equal(await textStorageKey("https://example.com/a"), await textStorageKey("https://example.com/b"));
+  assert.notEqual(await textStorageKey("https://example.com/a"), await radiusStorageKey("https://example.com/a"));
+  const entries = [{ selector: "#title", original: "Original", text: "Edited" }];
+  assert.equal(hasTextChanges(entries, []), true);
+  assert.equal(hasTextChanges(entries, mergeTextEntries([], entries)), false);
+  const savedGlobals = { document: globalThis.document, location: globalThis.location, MutationObserver: globalThis.MutationObserver };
+  const element = { isConnected: true, children: [], textContent: "Different" };
+  globalThis.location = { href: "https://example.com/a" };
+  globalThis.document = { documentElement: {}, querySelector: () => element };
+  globalThis.MutationObserver = class { observe() {} disconnect() {} };
+  try {
+    textEditor("restore", entries, location.href);
+    assert.equal(element.textContent, "Different");
+    element.textContent = "Original";
+    textEditor("restore", entries, location.href);
+    assert.equal(element.textContent, "Edited");
+    assert.deepEqual(textEditor("snapshot").entries, entries);
+    textEditor("reset");
+    assert.equal(element.textContent, "Original");
+  } finally {
+    delete globalThis.__pluggTextChanges;
+    for (const [key, value] of Object.entries(savedGlobals)) {
+      if (value === undefined) delete globalThis[key]; else globalThis[key] = value;
+    }
+  }
+});
 
 test("radius changes are shared across a site and reset restores the original styles", async () => {
   assert.equal(await radiusStorageKey("https://example.com/a"), await radiusStorageKey("https://example.com/b"));
@@ -71,8 +101,11 @@ test("theme migration and picture policy preserve small card variants", () => {
 
 test("layout preserves choices, defaults only missing data and keeps unlisted modules passive", () => {
   assert.deepEqual(normalizeLayout(), DEFAULT_LAYOUT);
-  assert.deepEqual(normalizeLayout({ active: [], passive: ["font", "qr", "volume", "manager"] }), { active: [], passive: ["font", "qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow", "themes"] });
-  assert.deepEqual(normalizeLayout({ active: ["font", "font", "unknown"], passive: ["font", "manager"] }), { active: ["font"], passive: ["manager", "volume", "qr", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow", "themes"] });
+  const migrated = normalizeLayout({ active: ["editor"], passive: ["themes"] });
+  assert.deepEqual(migrated.active, ["themes"]);
+  assert.equal(migrated.passive.includes("editor"), false);
+  assert.deepEqual(normalizeLayout({ active: [], passive: ["font", "qr", "volume", "manager"] }), { active: [], passive: ["font", "qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow", "themes"] });
+  assert.deepEqual(normalizeLayout({ active: ["font", "font", "unknown"], passive: ["font", "manager"] }), { active: ["font"], passive: ["manager", "volume", "qr", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow", "themes"] });
 });
 
 test("drop positions support reordering and moving to an empty group without duplicating modules", () => {
@@ -80,10 +113,10 @@ test("drop positions support reordering and moving to an empty group without dup
   assert.deepEqual(reordered.active, ["volume", "manager", "themes"]);
   assert.deepEqual(moveModule(reordered, "manager", "active", 0).active, DEFAULT_LAYOUT.active);
   const passive = moveModule(DEFAULT_LAYOUT, "volume", "passive", 1);
-  assert.deepEqual(passive, { active: ["manager", "themes"], passive: ["qr", "volume", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
+  assert.deepEqual(passive, { active: ["manager", "themes"], passive: ["qr", "volume", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow"] });
   const allPassive = moveModule(passive, "manager", "passive", 3);
-  assert.deepEqual(moveModule(allPassive, "font", "active", 0), { active: ["font", "themes"], passive: ["qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
-  assert.deepEqual(DEFAULT_LAYOUT, { active: ["manager", "volume", "themes"], passive: ["qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
+  assert.deepEqual(moveModule(allPassive, "font", "active", 0), { active: ["font", "themes"], passive: ["qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow"] });
+  assert.deepEqual(DEFAULT_LAYOUT, { active: ["manager", "volume", "themes"], passive: ["qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow"] });
 });
 
 test("passivation waits for pending starts, stops all tabs and blocks further starts", async () => {
@@ -161,7 +194,7 @@ test("passivation waits for pending starts, stops all tabs and blocks further st
     await startFont(3);
     await startFont(4);
     assert.deepEqual(sessionSaved.fontTabIds, [3,4]);
-    assert.deepEqual((await call("modules-background", "modules:status")).state, { volume: false, font: true, drawing: false, dark: false, editor: false, video: false });
+    assert.deepEqual((await call("modules-background", "modules:status")).state, { volume: false, font: true, drawing: false, dark: false, video: false });
     fontTabs.delete(3);
     await new Promise(resolve => listener({ target: "font-background", type: "font:ended" }, { id: "test", tab: { id: 3 }, frameId: 0 }, resolve));
     assert.deepEqual(sessionSaved.fontTabIds, [4]);

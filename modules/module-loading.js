@@ -11,7 +11,6 @@ const loaders = {
   screenshot: () => import("../components/modules/page-capture/FullPageCapture.jsx"),
   dark: () => import("../components/modules/dark-mode/DarkMode.jsx"),
   groups: () => import("../components/modules/tab-groups/DomainGroups.jsx"),
-  editor: () => import("../components/modules/page-editor/PageEditor.jsx"),
   video: () => import("../components/modules/video-tools/VideoTools.jsx"),
   gestureflow: () => import("../components/modules/gestureflow/GestureFlow.jsx"),
   themes: () => import("../components/modules/themes/Themes.jsx")

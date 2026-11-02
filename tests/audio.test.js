@@ -58,7 +58,7 @@ test("background shares capture startup and isolates tab state", async () => {
     await import("../background.js");
     const call = (type, tabId, settings) => new Promise(resolve => listener({ target: "audio-background", type, tabId, settings }, { id: "test" }, resolve));
     const running = () => new Promise(resolve => listener({ target: "modules-background", type: "modules:status" }, { id: "test" }, resolve));
-    assert.deepEqual((await running()).state, { volume: false, font: false, drawing: false, dark: false, editor: false, video: false });
+    assert.deepEqual((await running()).state, { volume: false, font: false, drawing: false, dark: false, video: false });
     assert.equal(created, 0);
     const before = await call("audio:get", 1);
     assert.equal(before.state.active, false);
@@ -71,7 +71,7 @@ test("background shares capture startup and isolates tab state", async () => {
     assert.equal(engineChecks, 4);
     await call("audio:start", 2, { gain: 2, preset: "flat" });
     await call("audio:stop", 1);
-    assert.deepEqual((await running()).state, { volume: true, font: false, drawing: false, dark: false, editor: false, video: false });
+    assert.deepEqual((await running()).state, { volume: true, font: false, drawing: false, dark: false, video: false });
     assert.equal((await call("audio:get", 1)).state.active, false);
     assert.equal((await call("audio:get", 2)).state.gain, 2);
     await call("audio:set", 2, { gain: 600, eq: [100], preset: "custom" });
@@ -82,6 +82,6 @@ test("background shares capture startup and isolates tab state", async () => {
     tabClosed(2);
     await new Promise(resolve => setImmediate(resolve));
     assert.equal(sessions.size, 0);
-    assert.deepEqual((await running()).state, { volume: false, font: false, drawing: false, dark: false, editor: false, video: false });
+    assert.deepEqual((await running()).state, { volume: false, font: false, drawing: false, dark: false, video: false });
   } finally { delete globalThis.chrome; }
 });
