@@ -13,7 +13,8 @@ const loaders = {
   groups: () => import("../components/modules/tab-groups/DomainGroups.jsx"),
   editor: () => import("../components/modules/page-editor/PageEditor.jsx"),
   video: () => import("../components/modules/video-tools/VideoTools.jsx"),
-  gestureflow: () => import("../components/modules/gestureflow/GestureFlow.jsx")
+  gestureflow: () => import("../components/modules/gestureflow/GestureFlow.jsx"),
+  themes: () => import("../components/modules/themes/Themes.jsx")
 };
 const pending = new Map();
 

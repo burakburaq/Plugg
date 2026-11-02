@@ -218,6 +218,9 @@ body:not([data-theme="win8"]) .page-link:hover .page-symbol { color: var(--dull-
 .error-message { margin: 0 16px 14px; padding: 12px; border: 1px solid var(--border); background: var(--surface); border-radius: 14px; color: var(--text); line-height: 1.6; font-size: 12px; }
 .notice { position: fixed; bottom: calc(var(--page-header-height) + 12px); left: 50%; transform: translateX(-50%); max-width: calc(100% - 32px); border: 1px solid var(--border); border-radius: 16px; padding: 13px 20px; background: var(--surface); box-shadow: 0 8px 28px #0004; color: var(--text); font-size: 12px; text-align: center; z-index: 11; }
 .tool-content { padding: 0 20px; display: flex; flex-direction: column; gap: 16px; }
+.themes-radius-toggle { display: flex; align-items: center; gap: 8px; font-size: var(--font-size-medium); }
+.themes-radius-toggle .secondary-button { flex: 0 0 auto; }
+.themes-radius-toggle .themes-save:not(:disabled) { background: #fff; border-color: #fff; color: #111; }
 .muted { color: var(--muted); font-size: 12px; line-height: 1.5; }
 .view-badge { margin-left: auto; color: var(--accent); font-size: 12px; }
 .field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }

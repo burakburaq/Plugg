@@ -9,6 +9,8 @@ import { handleEditor, stopEditors, editorRunning } from "./components/modules/p
 import { handleVideo, stopVideos, videoRunning } from "./components/modules/video-tools/video-background.js";
 import { groupDomainTabs, captureFullPage } from "./modules/page-tools.js";
 import { DARK_KEY } from "./components/modules/dark-mode/dark-settings.js";
+import { radiusEditor } from "./components/modules/themes/radius-editor.js";
+import { loadRadiusEntries } from "./components/modules/themes/radius-storage.js";
 
 let creating;
 const starting = new Map();
@@ -320,6 +322,15 @@ chrome.tabs.onRemoved.addListener((tabId, info) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
+  if ((change.status === "complete" || change.url) && (change.url || tab.url)) {
+    const url = change.url || tab.url;
+    enqueue(async () => {
+      if (!(await getLayout()).active.includes("themes") || !/^https?:\/\//.test(url)) return;
+      const { entries } = await loadRadiusEntries(url);
+      if (!entries.length) return;
+      await chrome.scripting.executeScript({ target: { tabId }, func: radiusEditor, args: ["restore", entries, url] });
+    }).catch(() => {});
+  }
   if (change.url && !change.status) {
     enqueue(async () => {
       if ((await getLayout()).active.includes("video")) await stopVideos(tabId);

@@ -2,6 +2,62 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { DEFAULT_LAYOUT, normalizeLayout, moveModule } from "../modules/module-layout.js";
 import { MENU_THEMES, normalizeMenuTheme, resolveTileVariant } from "../components/menuThemes.js";
+import { radiusEditor } from "../components/modules/themes/radius-editor.js";
+import { hasRadiusChanges, loadRadiusEntries, mergeRadiusEntries, radiusStorageKey } from "../components/modules/themes/radius-storage.js";
+
+test("radius changes are shared across a site and reset restores the original styles", async () => {
+  assert.equal(await radiusStorageKey("https://example.com/a"), await radiusStorageKey("https://example.com/b"));
+  assert.notEqual(await radiusStorageKey("https://example.com/a"), await radiusStorageKey("https://other.com/a"));
+  const previous = [{ selector: "#footer", radius: "10px" }, { selector: "#header", radius: "8px" }];
+  const updates = [{ selector: "#footer", radius: "20px" }];
+  assert.equal(hasRadiusChanges(updates, previous), true);
+  assert.deepEqual(mergeRadiusEntries(previous, updates), [{ selector: "#footer", radius: "20px" }, { selector: "#header", radius: "8px" }]);
+  assert.equal(hasRadiusChanges(updates, mergeRadiusEntries(previous, updates)), false);
+  const savedGlobals = { document: globalThis.document, location: globalThis.location, MutationObserver: globalThis.MutationObserver };
+  const properties = new Map([["border-top-left-radius", { value: "5px", priority: "" }]]);
+  const element = { isConnected: true, style: {
+    getPropertyValue: name => properties.get(name)?.value || "",
+    getPropertyPriority: name => properties.get(name)?.priority || "",
+    setProperty: (name, value, priority) => properties.set(name, { value, priority }),
+    removeProperty: name => properties.delete(name)
+  } };
+  globalThis.location = { href: "https://example.com/a" };
+  globalThis.document = { documentElement: {}, querySelector: selector => selector === "#item" ? element : null };
+  globalThis.MutationObserver = class { observe() {} disconnect() {} };
+  try {
+    const entries = [{ selector: "#item", radius: "30px" }];
+    assert.equal(radiusEditor("restore", entries, "https://example.com/b").restored, false);
+    assert.equal(radiusEditor("restore", entries, location.href).restored, true);
+    assert.deepEqual(radiusEditor("snapshot").entries, entries);
+    assert.equal(properties.get("border-radius").value, "30px");
+    radiusEditor("reset");
+    assert.equal(properties.get("border-top-left-radius").value, "5px");
+    assert.deepEqual(radiusEditor("snapshot").entries, []);
+  } finally {
+    delete globalThis.__pluggRadiusChanges;
+    for (const [key, value] of Object.entries(savedGlobals)) {
+      if (value === undefined) delete globalThis[key]; else globalThis[key] = value;
+    }
+  }
+});
+
+test("old page-specific radius settings migrate without overwriting site settings", async () => {
+  const url = "https://example.com/old";
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(url));
+  const oldKey = `themes:radius:${[...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, "0")).join("")}`;
+  const siteKey = await radiusStorageKey(url);
+  const stored = { [oldKey]: [{ selector: "#footer", radius: "4px" }], [siteKey]: [{ selector: "#footer", radius: "8px" }] };
+  const previousChrome = globalThis.chrome;
+  globalThis.chrome = { storage: { local: {
+    get: async keys => Object.fromEntries(keys.filter(key => key in stored).map(key => [key, stored[key]])),
+    set: async data => Object.assign(stored, data),
+    remove: async key => { delete stored[key]; }
+  } } };
+  try {
+    assert.deepEqual((await loadRadiusEntries(url)).entries, [{ selector: "#footer", radius: "8px" }]);
+    assert.equal(oldKey in stored, false);
+  } finally { if (previousChrome === undefined) delete globalThis.chrome; else globalThis.chrome = previousChrome; }
+});
 
 test("theme migration and picture policy preserve small card variants", () => {
   assert.equal(normalizeMenuTheme("theme-1"), "dull");
@@ -15,19 +71,19 @@ test("theme migration and picture policy preserve small card variants", () => {
 
 test("layout preserves choices, defaults only missing data and keeps unlisted modules passive", () => {
   assert.deepEqual(normalizeLayout(), DEFAULT_LAYOUT);
-  assert.deepEqual(normalizeLayout({ active: [], passive: ["font", "qr", "volume", "manager"] }), { active: [], passive: ["font", "qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
-  assert.deepEqual(normalizeLayout({ active: ["font", "font", "unknown"], passive: ["font", "manager"] }), { active: ["font"], passive: ["manager", "volume", "qr", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
+  assert.deepEqual(normalizeLayout({ active: [], passive: ["font", "qr", "volume", "manager"] }), { active: [], passive: ["font", "qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow", "themes"] });
+  assert.deepEqual(normalizeLayout({ active: ["font", "font", "unknown"], passive: ["font", "manager"] }), { active: ["font"], passive: ["manager", "volume", "qr", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow", "themes"] });
 });
 
 test("drop positions support reordering and moving to an empty group without duplicating modules", () => {
   const reordered = moveModule(DEFAULT_LAYOUT, "manager", "active", 2);
-  assert.deepEqual(reordered.active, ["volume", "manager"]);
+  assert.deepEqual(reordered.active, ["volume", "manager", "themes"]);
   assert.deepEqual(moveModule(reordered, "manager", "active", 0).active, DEFAULT_LAYOUT.active);
   const passive = moveModule(DEFAULT_LAYOUT, "volume", "passive", 1);
-  assert.deepEqual(passive, { active: ["manager"], passive: ["qr", "volume", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
+  assert.deepEqual(passive, { active: ["manager", "themes"], passive: ["qr", "volume", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
   const allPassive = moveModule(passive, "manager", "passive", 3);
-  assert.deepEqual(moveModule(allPassive, "font", "active", 0), { active: ["font"], passive: ["qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
-  assert.deepEqual(DEFAULT_LAYOUT, { active: ["manager", "volume"], passive: ["qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
+  assert.deepEqual(moveModule(allPassive, "font", "active", 0), { active: ["font", "themes"], passive: ["qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
+  assert.deepEqual(DEFAULT_LAYOUT, { active: ["manager", "volume", "themes"], passive: ["qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "editor", "video", "gestureflow"] });
 });
 
 test("passivation waits for pending starts, stops all tabs and blocks further starts", async () => {

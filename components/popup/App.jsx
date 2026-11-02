@@ -22,6 +22,7 @@ const DomainGroups = lazy(() => loadModule("groups"));
 const PageEditor = lazy(() => loadModule("editor"));
 const VideoTools = lazy(() => loadModule("video"));
 const GestureFlow = lazy(() => loadModule("gestureflow"));
+const Themes = lazy(() => loadModule("themes"));
 
 const modules = [
   { id: "manager", title: t("modules_extension_manager"), description: t("modules_enable_and_disable_extensions"), Component: ExtensionManager,
@@ -51,7 +52,9 @@ const modules = [
   { id: "video", title: t("modules_video_tools"), description: t("modules_video_zoom_and_image_settings"), Component: VideoTools,
     icon: <><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="1.8" /><path d="m10 8 6 4-6 4V8Z" fill="currentColor" /></> },
   { id: "gestureflow", title: t("modules_gestureflow"), description: t("modules_gestureflow"), Component: GestureFlow, picture: gestureflowPicture,
-    icon: <path d="M8 12V5a2 2 0 0 1 4 0v5-6a2 2 0 0 1 4 0v7-4a2 2 0 0 1 4 0v7c0 5-3 8-8 8H9c-2 0-4-1-5-3l-2-4a2 2 0 0 1 3-2l3 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /> }
+    icon: <path d="M8 12V5a2 2 0 0 1 4 0v5-6a2 2 0 0 1 4 0v7-4a2 2 0 0 1 4 0v7c0 5-3 8-8 8H9c-2 0-4-1-5-3l-2-4a2 2 0 0 1 3-2l3 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /> },
+  { id: "themes", title: t("modules_themes"), description: t("modules_themes"), Component: Themes,
+    icon: <><path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1.6-3.2 1.5 1.5 0 0 1 1.2-2.4h1.7a3.5 3.5 0 0 0 3.5-3.5C21 7 17 3 12 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><circle cx="7.5" cy="11" r="1" fill="currentColor" /><circle cx="10" cy="7.5" r="1" fill="currentColor" /><circle cx="14" cy="7.5" r="1" fill="currentColor" /><circle cx="17" cy="11" r="1" fill="currentColor" /></> }
 ];
 
 export default function App() {
