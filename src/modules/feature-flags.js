@@ -10,7 +10,7 @@ export const FEATURE_FLAGS = Object.freeze({
 });
 export const FLAG_CACHE_KEY = "featureFlagsCache";
 export const FLAG_CHANNEL_KEY = "featureFlagsChannel";
-export const FLAG_URL = "https://raw.githubusercontent.com/burakburaq/Plugg/feature-flags/feature-flags.json";
+export const FLAG_URL = "https://raw.githubusercontent.com/burakburaq/Plugg/main/feature-flags.json";
 export const DEFAULT_FLAGS = bundled;
 export const PACKAGED_VERSIONS = Object.freeze({
   "extension.menu": [1],
