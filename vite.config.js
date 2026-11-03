@@ -67,12 +67,12 @@ const offscreenDevFile = {
       const offscreenOutput = resolve(output, "src/components/modules/volume-booster");
       mkdirSync(offscreenOutput, { recursive: true });
       copyFileSync(source, resolve(offscreenOutput, "offscreen.html"));
-      cpSync(resolve(server.config.root, "public"), output, { recursive: true });
+      cpSync(server.config.publicDir, output, { recursive: true });
       writeFileSync(resolve(output, "vendor/darkreader.js"), darkReaderBundle());
       copyFileSync(resolve("node_modules/darkreader/LICENSE"), resolve(output, "vendor/darkreader-LICENSE.txt"));
     };
     server.httpServer?.once("listening", copy);
-    const publicPath = resolve(server.config.root, "public") + sep;
+    const publicPath = server.config.publicDir + sep;
     const localePath = resolve(server.config.root, "src/locales") + sep;
     const syncPublicFile = file => { if (resolve(file) === source || resolve(file).startsWith(localePath) || resolve(file).startsWith(publicPath) || file.includes("dark-mode-content.js")) copy(); };
     server.watcher.on("change", syncPublicFile);
@@ -81,6 +81,7 @@ const offscreenDevFile = {
 };
 
 export default defineConfig(({ command }) => ({
+  publicDir: "assets/public",
   plugins: [react(), crx({ manifest }), offscreenDevFile],
   server: {
     host: "localhost",
