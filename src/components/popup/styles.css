@@ -178,8 +178,9 @@ body:not([data-theme="win8"]) .page-link:hover .page-symbol { color: var(--dull-
 .page-label { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; min-height: 28px; width: 100%; box-sizing: border-box; padding-inline: 8px; font-family: var(--app-font); font-size: var(--font-size-medium); font-weight: 400; line-height: 1.15; text-shadow: 0 1px 4px rgb(0 0 0 / 70%); }
 .page-label--split { flex-direction: column; }
 .page-label--split > span { display: block; max-width: 100%; white-space: nowrap; }
-.page-header { position: fixed; bottom: 0; left: 0; right: 0; height: var(--page-header-height); display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: var(--panel); z-index: 10; }
-.page-header h1 { font-size: var(--font-size-medium); font-weight: 600; }
+.page-header { position: fixed; bottom: 0; left: 0; right: 0; height: var(--page-header-height); display: flex; align-items: center; justify-content: center; padding: 12px 20px; background: var(--panel); z-index: 10; }
+.page-header .back-button { position: absolute; left: 20px; }
+.page-header h1 { max-width: calc(100% - 112px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-size: var(--font-size-medium); font-weight: 600; }
 .page-header h1:focus { outline: none; }
 .module-toolbar { display: flex; align-items: center; justify-content: flex-end; min-height: 24px; }
 .back-button { display: grid; place-items: center; width: 36px; height: 36px; flex-shrink: 0; padding: 0; border: 1px solid var(--border); border-radius: 6px; background: var(--panel); color: var(--muted); font-size: 22px; line-height: 1; }

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { DARK_DEFAULTS, DARK_KEY, normalizeDark } from "../components/modules/dark-mode/dark-settings.js";
-import { handleDarkMode, darkPageContext } from "../components/modules/dark-mode/dark-background.js";
+import { DARK_DEFAULTS, DARK_KEY, normalizeDark } from "../src/components/modules/dark-mode/dark-settings.js";
+import { handleDarkMode, darkPageContext } from "../src/components/modules/dark-mode/dark-background.js";
 
 function mockDark(initial) {
   const data = { [DARK_KEY]: structuredClone(initial) };

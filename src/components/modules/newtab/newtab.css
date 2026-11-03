@@ -15,7 +15,7 @@ input, select { width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid
 input:focus, select:focus { border-color: #52698788; }
 input::placeholder { color: #68737e; }
 #newtab-workspace { position: relative; min-height: 500px; isolation: isolate; }
-.nt-scenery { position: fixed; inset: 0; z-index: -1; background: #cad3df url('../../../assets/newtab-1.png') center center / cover no-repeat; transform: scale(1.18); transform-origin: 50% 0; }
+.nt-scenery { position: fixed; inset: 0; z-index: -1; background: #cad3df url('../../../../assets/newtab-1.png') center center / cover no-repeat; transform: scale(1.18); transform-origin: 50% 0; }
 .nt-scenery::after { content: ''; position: absolute; inset: 0; background: linear-gradient(#dce6f11c, #ffffff0c 60%, #182a3c0a); }
 .nt-widget { position: absolute; display: flex; flex-direction: column; border: 1px solid #ffffff2e; border-radius: 22px; background: #ffffff78; backdrop-filter: blur(20px); box-shadow: 0 6px 24px #12283f04; }
 .nt-widget-clock, .nt-widget-search, .nt-widget-links { border-color: transparent; background: transparent; backdrop-filter: none; box-shadow: none; }

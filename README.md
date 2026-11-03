@@ -28,10 +28,11 @@ sekme sesini ayarla, sayfaya çizim yap veya yeni sekmeni özelleştir.
 | Yazı Tipi Bulucu | İmleç altındaki metnin CSS font ailesini, boyutunu ve kalınlığını göster. |
 | Renk Seçici | Ekrandan renk al, HEX/RGB değerini kopyala. |
 | Sekme Grupları | Aynı domaindeki sekmeleri grupla. |
-| Themes | Sayfa öğelerinin köşe yarıçapını ve metinlerini düzenle; değişiklikleri site için kaydet. |
+| HTML editor | Sayfa öğelerinin köşe yarıçapını ve metinlerini düzenle; değişiklikleri site için kaydet. |
+| Whats This? | Yazı tipi bulucu ve renk seçici araçlarını tek modülde kullan. |
 | QR Oluşturucu | **Tasarım aşamasında.** QR üretimi ve indirme henüz yok. |
 
-İlk kurulumda **Extension Manager**, **Volume Booster** ve **Themes** aktiftir. Ana menüdeki
+İlk kurulumda **Extension Manager**, **Volume Booster** ve **HTML editor** aktiftir. Ana menüdeki
 çarktan diğer modülleri aktifleştirebilir ve sürükleyerek sıralayabilirsin.
 Değişiklikler otomatik kaydedilir. Kodun önceden yüklenmesi modülü çalıştırmaz.
 
@@ -71,7 +72,7 @@ npm run build
 ```
 
 Chrome'da `chrome://extensions` → **Geliştirici modu** → **Paketlenmemiş öğe
-yükle** yolunu izleyerek **dist-chrome** klasörünü seç. Yeni derlemeden sonra
+yükle** yolunu izleyerek **build/dist-chrome** klasörünü seç. Yeni derlemeden sonra
 eklenti kartındaki **Yeniden yükle** düğmesi yeterlidir.
 
 Firefox için:
@@ -81,7 +82,7 @@ npm run build:firefox
 ```
 
 `about:debugging#/runtime/this-firefox` → **Geçici eklenti yükle** üzerinden
-**dist-firefox/manifest.json** dosyasını seç. Bu geçici kurulum tarayıcı yeniden
+**build/dist-firefox/manifest.json** dosyasını seç. Bu geçici kurulum tarayıcı yeniden
 başlatılınca kaldırılır; paket imzalı mağaza dağıtımı değildir.
 
 [GitHub Actions](https://github.com/burakburaq/Plugg/actions) içindeki başarılı
@@ -96,14 +97,15 @@ içindeki dosya varsayılandır; uzaktaki yapılandırma GitHub deposunun
 `feature-flags` dalındaki aynı adlı dosyadan okunur. Geçersiz veya erişilemeyen
 uzak veri yerine son geçerli kayıt ya da paket içi değerler kullanılır.
 `0` modülü gizler; pakette bulunmayan sürümler mevcut sürüme geri döner.
-Modül sürümleri `modules/module-loading.js` içindeki map ile tanımlanır.
+Yeni bir modül sürümü `src/modules/module-loading.js` içindeki manuel sürüm
+map'ine eklenir; paketlenmiş modül sürümleri bu map'ten belirlenir.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Chrome'a **dist-chrome.dev** klasörünü yükle ve geliştirme sunucusunu açık tut.
+Chrome'a **build/dist-chrome.dev** klasörünü yükle ve geliştirme sunucusunu açık tut.
 React arayüz değişiklikleri Vite/CRXJS üzerinden otomatik güncellenir; manifest
 ve izin değişiklikleri eklentiyi yeniden yüklemeyi gerektirebilir.
 Geliştirme ve üretim kopyalarını aynı anda etkinleştirme.
@@ -111,12 +113,12 @@ Geliştirme ve üretim kopyalarını aynı anda etkinleştirme.
 | Komut | Sonuç |
 | --- | --- |
 | `npm test` | Node testlerini çalıştırır. |
-| `npm run build` | Chrome üretim çıktısı: `dist-chrome`. |
-| `npm run build:firefox` | Chrome ve Firefox çıktıları: `dist-chrome`, `dist-firefox`. |
-| `npm run dev` | Chrome hot reload çıktısı: `dist-chrome.dev`. |
+| `npm run build` | Chrome üretim çıktısı: `build/dist-chrome`. |
+| `npm run build:firefox` | Chrome ve Firefox çıktıları: `build/dist-chrome`, `build/dist-firefox`. |
+| `npm run dev` | Chrome hot reload çıktısı: `build/dist-chrome.dev`. |
 
-Kaynak kod React/JavaScript'tir. Modül ekranları `components/modules/`, ortak
-arayüz parçaları `components/`, tarayıcı işlemleri `modules/` altında bulunur.
+Kaynak kod React/JavaScript'tir. Modül ekranları `src/components/modules/`, ortak
+arayüz parçaları `src/components/`, tarayıcı işlemleri `src/modules/` altında bulunur.
 CI, `main` gönderimlerinde ve pull request'lerde temiz kurulum, test ve iki
 tarayıcı için derleme yapar. Otomatik testler tarayıcı içi uyumluluk testlerinin
 yerini tutmaz.
@@ -139,9 +141,58 @@ görsellerini yükler. Arka plan görseli paket içindedir.
 ## Belgeler ve lisans
 
 - [Ayrıntılı kullanım ve geliştirme](docs/usage.md)
-- [Bağımlılıklar, görseller ve servis kaynakları](THIRD_PARTY_NOTICES.md)
+- [Bağımlılıklar ve servis kaynakları](#kaynaklar-ve-üçüncü-taraf-bildirimleri)
 - [Görsel kaynak notu](assets/newtab-background.md)
 - [MIT lisansı](LICENSE) — proje kaynak kodu. Bağımlılık ve görsel bildirimleri ayrıca korunur.
 
 Hata bildirirken tarayıcı sürümünü, ilgili modülü ve sorunu yeniden oluşturma
 adımlarını [Issues](https://github.com/burakburaq/Plugg/issues) sayfasına ekleyebilirsin.
+
+## Kaynaklar ve üçüncü taraf bildirimleri
+
+plugg kaynak kodu [MIT](LICENSE) lisanslıdır. Bağımlılıkların telif ve lisans
+bildirimleri kendi sahiplerine aittir; plugg lisansı bunların yerine geçmez.
+Kesin bağımlılık sürümleri ve geçişli bağımlılıklar `package-lock.json` içindedir.
+
+### Paketlenen çalışma zamanı bağımlılıkları
+
+| Bağımlılık | Sürüm | Lisans | Kaynak |
+| --- | --- | --- | --- |
+| React | 19.3.0 | MIT | [facebook/react](https://github.com/facebook/react) |
+| React DOM | 19.3.0 | MIT | [facebook/react](https://github.com/facebook/react/tree/main/packages/react-dom) |
+| Scheduler | 0.28.0 | MIT | [facebook/react](https://github.com/facebook/react/tree/main/packages/scheduler) |
+| Dark Reader | 4.9.133 | MIT | [darkreader/darkreader](https://github.com/darkreader/darkreader) |
+| Bebas Neue | Regular | SIL Open Font License 1.1 | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/bebasneue) |
+| Barlow Condensed | Light | SIL Open Font License 1.1 | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/barlowcondensed) |
+
+Derleme bu paketlerin tam lisans metinlerini kurulu bağımlılıklardan okuyarak
+`LICENSES/` klasörüne ekler. Dark Reader lisansı ayrıca
+`vendor/darkreader-LICENSE.txt` olarak korunur. Dark Reader motorunun taşıma
+katmanı yerel kapsama alınır ve kapalı proxy kodunun MV3 CSP altında enjekte
+edilmesi engellenir; özgün lisans ve telif bildirimleri korunur.
+Bebas Neue lisansı `fonts/BebasNeue-OFL.txt` içinde dağıtılır.
+Barlow Condensed lisansı `fonts/BarlowCondensed-OFL.txt` içinde dağıtılır.
+
+### Geliştirme araçları
+
+| Araç | Sürüm | Lisans | Kaynak |
+| --- | --- | --- | --- |
+| Vite | 8.3.1 | MIT | [vitejs/vite](https://github.com/vitejs/vite) |
+| Vite React eklentisi | 6.1.1 | MIT | [vitejs/vite-plugin-react](https://github.com/vitejs/vite-plugin-react) |
+| CRXJS Vite eklentisi | 3.0.0 | MIT | [crxjs/chrome-extension-tools](https://github.com/crxjs/chrome-extension-tools) |
+
+Bu araçlar derleme/geliştirme içindir. Onların geçişli bağımlılıklarının lisans
+metinleri, `npm ci` sonrasında ilgili `node_modules` paketlerinde bulunur.
+Bağımlılık güncellenirken bu tablo da güncellenmelidir.
+
+### Harici servisler
+
+- İsteğe bağlı hava durumu bileşeni [Open-Meteo tahmin](https://open-meteo.com/en/docs)
+  ve [şehir arama](https://open-meteo.com/en/docs/geocoding-api) servislerini
+  kullanır. Veriler [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+  kapsamındadır; ücretsiz API ticari olmayan kullanım içindir. Servis erişimi,
+  kod lisansından ayrı olarak sağlayıcının
+  [kullanım koşullarına](https://open-meteo.com/en/terms) tabidir.
+- Yeni sekmedeki arama, kullanıcı gönderdiğinde Google'a yönlenir. Site
+  kısayollarındaki hizmet adları/markalar kendi sahiplerine aittir; bağlantı
+  verilmesi ortaklık veya destek anlamına gelmez.

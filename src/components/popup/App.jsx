@@ -5,7 +5,7 @@ import Button from "../Button.jsx";
 import ExtensionMenu from "../ExtensionMenu.jsx";
 import Settings from "../settings/Settings.jsx";
 import { MENU_THEMES, normalizeMenuTheme } from "../menuThemes.js";
-import gestureflowPicture from "../../assets/tile-pictures/gesture-flow.png";
+import gestureflowPicture from "../../../assets/tile-pictures/gesture-flow.png";
 import { DEFAULT_LAYOUT, LAYOUT_KEY, moveModule, normalizeLayout } from "../../modules/module-layout.js";
 import { loadModule, preloadModule, recentModules, normalizeSortOrder, RECENT_MODULES_KEY, SORT_ORDER_KEY } from "../../modules/module-loading.js";
 import { FLAG_CACHE_KEY, FLAG_CHANNEL_KEY, FEATURE_FLAGS, filterFlaggedLayout, currentFlags, resolveFlags } from "../../modules/feature-flags.js";
@@ -24,6 +24,7 @@ const DomainGroups = lazy(() => loadModule("groups"));
 const VideoTools = lazy(() => loadModule("video"));
 const GestureFlow = lazy(() => loadModule("gestureflow"));
 const Themes = lazy(() => loadModule("themes"));
+const WhatsThis = lazy(() => loadModule("whatsthis"));
 const MENU_VERSIONS = { 1: ExtensionMenu };
 const versionedComponents = new Map();
 function componentForVersion(module, version) {
@@ -62,6 +63,8 @@ const modules = [
     icon: <path d="M8 12V5a2 2 0 0 1 4 0v5-6a2 2 0 0 1 4 0v7-4a2 2 0 0 1 4 0v7c0 5-3 8-8 8H9c-2 0-4-1-5-3l-2-4a2 2 0 0 1 3-2l3 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /> },
   { id: "themes", title: t("modules_themes"), description: t("modules_themes"), Component: Themes,
     icon: <><path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1.6-3.2 1.5 1.5 0 0 1 1.2-2.4h1.7a3.5 3.5 0 0 0 3.5-3.5C21 7 17 3 12 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><circle cx="7.5" cy="11" r="1" fill="currentColor" /><circle cx="10" cy="7.5" r="1" fill="currentColor" /><circle cx="14" cy="7.5" r="1" fill="currentColor" /><circle cx="17" cy="11" r="1" fill="currentColor" /></> },
+  { id: "whatsthis", title: t("modules_whats_this"), description: t("modules_whats_this"), Component: WhatsThis,
+    icon: <><circle cx="10.5" cy="10.5" r="7.5" stroke="currentColor" strokeWidth="1.8" /><path d="m16 16 5 5M8.5 8a2.2 2.2 0 0 1 4.2 1c0 1.4-2.2 1.8-2.2 3.2m0 2.8h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></> }
 ];
 
 export default function App() {

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { defaultNewTab, normalizeNewTab, fitWidget, normalizeSearchSite, searchQuery, searchUrl } from "../components/modules/newtab/newtab-settings.js";
-import { normalizeFocus, focusRemaining, normalizeTodos, normalizeLinks, safeLink, normalizeWeather } from "../components/modules/newtab/newtab-data.js";
+import { defaultNewTab, normalizeNewTab, fitWidget, normalizeSearchSite, searchQuery, searchUrl } from "../src/components/modules/newtab/newtab-settings.js";
+import { normalizeFocus, focusRemaining, normalizeTodos, normalizeLinks, safeLink, normalizeWeather } from "../src/components/modules/newtab/newtab-data.js";
 
 test("search filters form an encoded Google query and reject invalid sites", () => {
   assert.equal(searchQuery("  react rehberi  ", "https://example.com/docs/", "pdf"), "react rehberi site:example.com/docs filetype:pdf");

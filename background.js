@@ -1,19 +1,20 @@
-import { t } from "./modules/i18n.js";
-import { normalizeSettings } from "./components/modules/volume-booster/audio-settings.js";
-import { LAYOUT_KEY, normalizeLayout } from "./modules/module-layout.js";
-import { inspectFonts } from "./components/modules/font-finder/font-inspector.js";
-import { handleDrawing, stopDrawings, drawingRunning, restoreDrawing, invalidateDrawingSettings } from "./components/modules/page-drawing/drawing-background.js";
-import { handleShortcuts, runShortcut, trackShortcutTab, resetShortcutTabs, forgetShortcutTab, replaceShortcutTab } from "./components/modules/keyboard-shortcuts/shortcuts-background.js";
-import { handleDarkMode, getDarkSettings, stopDarkMode, fetchDarkResource, darkPageContext } from "./components/modules/dark-mode/dark-background.js";
-import { handleVideo, stopVideos, videoRunning } from "./components/modules/video-tools/video-background.js";
-import { groupDomainTabs, captureFullPage } from "./modules/page-tools.js";
-import { DARK_KEY } from "./components/modules/dark-mode/dark-settings.js";
-import { radiusEditor } from "./components/modules/themes/radius-editor.js";
-import { loadRadiusEntries } from "./components/modules/themes/radius-storage.js";
-import { textEditor } from "./components/modules/themes/text-editor.js";
-import { loadTextEntries } from "./components/modules/themes/text-storage.js";
-import { installThemesControl } from "./components/modules/themes/themes-control.js";
-import { FLAG_CACHE_KEY, FLAG_CHANNEL_KEY, FEATURE_FLAGS, currentFlags, filterFlaggedLayout, mergeFlaggedLayout, refreshFlags, resolveFlags } from "./modules/feature-flags.js";
+import { t } from "./src/modules/i18n.js";
+import { normalizeSettings } from "./src/components/modules/volume-booster/audio-settings.js";
+import { LAYOUT_KEY, normalizeLayout } from "./src/modules/module-layout.js";
+import { inspectFonts } from "./src/components/modules/font-finder/font-inspector.js";
+import { handleDrawing, stopDrawings, drawingRunning, restoreDrawing, invalidateDrawingSettings } from "./src/components/modules/page-drawing/drawing-background.js";
+import { handleShortcuts, runShortcut, trackShortcutTab, resetShortcutTabs, forgetShortcutTab, replaceShortcutTab } from "./src/components/modules/keyboard-shortcuts/shortcuts-background.js";
+import { handleDarkMode, getDarkSettings, stopDarkMode, fetchDarkResource, darkPageContext } from "./src/components/modules/dark-mode/dark-background.js";
+import { handleVideo, stopVideos, videoRunning } from "./src/components/modules/video-tools/video-background.js";
+import { groupDomainTabs, captureFullPage } from "./src/modules/page-tools.js";
+import { DARK_KEY } from "./src/components/modules/dark-mode/dark-settings.js";
+import { radiusEditor } from "./src/components/modules/themes/radius-editor.js";
+import { loadRadiusEntries } from "./src/components/modules/themes/radius-storage.js";
+import { textEditor } from "./src/components/modules/themes/text-editor.js";
+import { loadTextEntries } from "./src/components/modules/themes/text-storage.js";
+import { installThemesControl } from "./src/components/modules/themes/themes-control.js";
+import { startWhatsThisPicker, stopWhatsThisPicker } from "./src/components/modules/whats-this/picker-manager.js";
+import { FLAG_CACHE_KEY, FLAG_CHANNEL_KEY, FEATURE_FLAGS, currentFlags, filterFlaggedLayout, mergeFlaggedLayout, refreshFlags, resolveFlags } from "./src/modules/feature-flags.js";
 
 let creating;
 const starting = new Map();
@@ -56,6 +57,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
       if (disabled("shortcuts")) await resetShortcutTabs(false);
       if (disabled("dark")) await stopDarkMode(true);
       if (disabled("video")) await stopVideos();
+      if (disabled("whatsthis")) await stopWhatsThisPicker();
       for (const id of ["themes", "color"]) if (disabled(id)) {
         const tabs = await chrome.tabs.query({});
         await Promise.all(tabs.map(tab => chrome.tabs.sendMessage(tab.id, { target: "plugg-feature-control", module: id }, { frameId: 0 }).catch(() => {})));
@@ -72,7 +74,7 @@ async function hasAudioDocument() {
   if (!chrome.runtime.getContexts || !chrome.offscreen) return false;
   const contexts = await chrome.runtime.getContexts({
     contextTypes: ["OFFSCREEN_DOCUMENT"],
-    documentUrls: [chrome.runtime.getURL("components/modules/volume-booster/offscreen.html")]
+    documentUrls: [chrome.runtime.getURL("src/components/modules/volume-booster/offscreen.html")]
   });
   return contexts.length > 0;
 }
@@ -83,7 +85,7 @@ async function ensureAudioDocument() {
   creating = (async () => {
     if (!await hasAudioDocument()) {
       await chrome.offscreen.createDocument({
-        url: "components/modules/volume-booster/offscreen.html",
+        url: "src/components/modules/volume-booster/offscreen.html",
         reasons: ["USER_MEDIA"],
         justification: t("common_boost_and_equalize_tab_audio_while_popup")
       });
@@ -209,6 +211,7 @@ async function handleModules(message) {
   if (before.active.includes("shortcuts") !== nextVisible.active.includes("shortcuts")) await resetShortcutTabs(nextVisible.active.includes("shortcuts"));
   if (before.active.includes("dark") && !nextVisible.active.includes("dark")) await stopDarkMode();
   if (before.active.includes("video") && !nextVisible.active.includes("video")) await stopVideos();
+  if (before.active.includes("whatsthis") && !nextVisible.active.includes("whatsthis")) await stopWhatsThisPicker();
   await chrome.storage.local.set({ [LAYOUT_KEY]: next });
   layoutPromise = Promise.resolve(next);
   return next;
@@ -257,7 +260,8 @@ chrome.runtime.onMessage.addListener((message, sender, reply) => {
   if (sender.id !== chrome.runtime.id) return;
   const handler = { "audio-background": handle, "font-background": handleFont, "modules-background": handleModules, "drawing-background": drawingHandler, "shortcuts-background": shortcutsHandler,
     "dark-background": darkHandler, "video-background": videoHandler, "page-tools-background": pageToolsHandler, "color-background": colorHandler,
-    "flags-background": handleFlags }[message?.target];
+    "whats-this-color-background": (message, sender) => colorHandler(message, sender, "whatsthis"),
+    "whats-this-picker-background": whatsThisPickerHandler, "flags-background": handleFlags }[message?.target];
   if (!handler) return;
   // Independent read-only resource requests must not block control/cleanup commands.
   if (message.target === "dark-background" && ["dark:fetch", "dark:context"].includes(message.type)) {
@@ -297,8 +301,8 @@ async function pageToolsHandler(message) {
   return captureFullPage(message.tabId);
 }
 
-async function colorHandler(message, sender) {
-  if (!Number.isInteger(sender.tab?.id) || !(await getLayout()).active.includes("color")) throw new Error(t("common_color_picker_is_unavailable"));
+async function colorHandler(message, sender, moduleId = "color") {
+  if (!Number.isInteger(sender.tab?.id) || !(await getLayout()).active.includes(moduleId)) throw new Error(t("common_color_picker_is_unavailable"));
   if (message.type === "color:save" && /^#[\da-f]{6}$/i.test(message.color)) {
     const now = Date.now();
     const { colorHistory } = await chrome.storage.local.get("colorHistory");
@@ -312,6 +316,11 @@ async function colorHandler(message, sender) {
   const tab = await chrome.tabs.get(sender.tab.id);
   if (!tab.active) throw new Error(t("common_tab_is_not_active"));
   return chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
+}
+
+async function whatsThisPickerHandler(message) {
+  if (message.type !== "start" || !(await getLayout()).active.includes("whatsthis")) throw new Error("Picker is unavailable");
+  return startWhatsThisPicker(message.tabId, message.mode);
 }
 
 async function videoHandler(message, sender) {
@@ -343,6 +352,7 @@ chrome.runtime.onInstalled.addListener(initializeShortcutTabs);
 
 chrome.tabs.onRemoved.addListener((tabId, info) => {
   enqueue(async () => {
+    await stopWhatsThisPicker(tabId);
     if ((await getLayout()).active.includes("shortcuts")) await forgetShortcutTab(tabId, info);
     if ((await getLayout()).active.includes("video")) await stopVideos(tabId);
     await handle({ type: "audio:stop", tabId });

@@ -42,6 +42,9 @@ export const MODULE_VERSION_LOADERS = {
   themes: {
     1: () => import("../components/modules/themes/Themes.jsx"),
   },
+  whatsthis: {
+    1: () => import("../components/modules/whats-this/WhatsThis.jsx"),
+  }
 };
 const pending = new Map();
 

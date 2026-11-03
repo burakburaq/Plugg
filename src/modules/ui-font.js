@@ -1,5 +1,5 @@
-import fontUrl from "../assets/fonts/BebasNeue-Regular.ttf?inline";
-import appFontUrl from "../assets/fonts/BarlowCondensed-Light.ttf?inline";
+import fontUrl from "../../assets/fonts/BebasNeue-Regular.ttf?inline";
+import appFontUrl from "../../assets/fonts/BarlowCondensed-Light.ttf?inline";
 
 let loading;
 export function loadPluggFont() {

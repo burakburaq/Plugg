@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { CUSTOM_COMMANDS, SHORTCUTS_KEY, SHORTCUT_CONDITIONS_KEY, TAB_HISTORY_KEY, normalizeShortcuts, normalizeShortcutConditions, validateShortcut, recordActivation } from "../components/modules/keyboard-shortcuts/shortcut-settings.js";
-import { usesArrowKey, shortcutCondition } from "../components/modules/keyboard-shortcuts/shortcut-focus.js";
+import { CUSTOM_COMMANDS, SHORTCUTS_KEY, SHORTCUT_CONDITIONS_KEY, TAB_HISTORY_KEY, normalizeShortcuts, normalizeShortcutConditions, validateShortcut, recordActivation } from "../src/components/modules/keyboard-shortcuts/shortcut-settings.js";
+import { usesArrowKey, shortcutCondition } from "../src/components/modules/keyboard-shortcuts/shortcut-focus.js";
 
 test("arrow shortcuts recognize Chrome's English and Turkish labels without matching ordinary shortcuts", () => {
   for (const value of ["Ctrl+Left", "Ctrl+Shift+ArrowRight", "Ctrl+Sol Ok", "Ctrl+Sağ Ok", "Alt+Yukarı Ok", "Ctrl+↓"]) assert.equal(usesArrowKey(value), true);

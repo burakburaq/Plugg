@@ -16,9 +16,13 @@ function darkReaderBundle() {
 
 // Carry runtime licenses with every unpacked distribution.
 function distributionNotices() {
+  const readme = readFileSync(resolve("README.md"), "utf8");
+  const marker = "## Kaynaklar ve üçüncü taraf bildirimleri";
+  const start = readme.indexOf(marker);
+  if (start < 0) throw new Error("Üçüncü taraf bildirimleri README içinde bulunamadı.");
   return [
     ["LICENSE", readFileSync(resolve("LICENSE"))],
-    ["THIRD_PARTY_NOTICES.md", readFileSync(resolve("THIRD_PARTY_NOTICES.md"))],
+    ["THIRD_PARTY_NOTICES.md", readme.slice(start)],
     ...["react", "react-dom", "scheduler", "darkreader"].map(name => [
       `LICENSES/${name}.txt`, readFileSync(resolve(`node_modules/${name}/LICENSE`))
     ])
@@ -26,7 +30,7 @@ function distributionNotices() {
 }
 
 function localeCatalogs() {
-  const content = readFileSync(resolve("locales/en.json"), "utf8");
+  const content = readFileSync(resolve("src/locales/en.json"), "utf8");
   const messages = JSON.parse(content);
   for (const [key, entry] of Object.entries(messages)) {
     if (typeof entry?.message !== "string" || !entry.message) throw new Error(`Missing translation: ${key}`);
@@ -48,7 +52,7 @@ const offscreenDevFile = {
     this.emitFile({ type: "asset", fileName: "vendor/darkreader-LICENSE.txt", source: readFileSync(resolve("node_modules/darkreader/LICENSE")) });
   },
   configureServer(server) {
-    const source = resolve(server.config.root, "components/modules/volume-booster/offscreen.html");
+    const source = resolve(server.config.root, "src/components/modules/volume-booster/offscreen.html");
     const output = resolve(server.config.root, server.config.build.outDir);
     const copy = () => {
       mkdirSync(resolve(output, "vendor"), { recursive: true });
@@ -60,7 +64,7 @@ const offscreenDevFile = {
       for (const [fileName, content] of distributionNotices()) {
         writeFileSync(resolve(output, fileName), content);
       }
-      const offscreenOutput = resolve(output, "components/modules/volume-booster");
+      const offscreenOutput = resolve(output, "src/components/modules/volume-booster");
       mkdirSync(offscreenOutput, { recursive: true });
       copyFileSync(source, resolve(offscreenOutput, "offscreen.html"));
       cpSync(resolve(server.config.root, "public"), output, { recursive: true });
@@ -69,7 +73,7 @@ const offscreenDevFile = {
     };
     server.httpServer?.once("listening", copy);
     const publicPath = resolve(server.config.root, "public") + sep;
-    const localePath = resolve(server.config.root, "locales") + sep;
+    const localePath = resolve(server.config.root, "src/locales") + sep;
     const syncPublicFile = file => { if (resolve(file) === source || resolve(file).startsWith(localePath) || resolve(file).startsWith(publicPath) || file.includes("dark-mode-content.js")) copy(); };
     server.watcher.on("change", syncPublicFile);
     server.watcher.on("add", syncPublicFile);
@@ -85,7 +89,7 @@ export default defineConfig(({ command }) => ({
     cors: { origin: [/^chrome-extension:\/\/[a-p]{32}$/] }
   },
   build: {
-    outDir: command === "serve" ? "dist-chrome.dev" : "dist-chrome",
-    rolldownOptions: { input: { offscreen: "components/modules/volume-booster/offscreen.html" } }
+    outDir: command === "serve" ? "build/dist-chrome.dev" : "build/dist-chrome",
+    rolldownOptions: { input: { offscreen: "src/components/modules/volume-booster/offscreen.html" } }
   }
 }));

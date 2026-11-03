@@ -1,12 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { DEFAULT_LAYOUT, normalizeLayout, moveModule } from "../modules/module-layout.js";
-import { MENU_THEMES, normalizeMenuTheme, resolveTileVariant } from "../components/menuThemes.js";
-import { radiusEditor } from "../components/modules/themes/radius-editor.js";
-import { hasRadiusChanges, loadRadiusEntries, mergeRadiusEntries, radiusStorageKey } from "../components/modules/themes/radius-storage.js";
-import { textEditor } from "../components/modules/themes/text-editor.js";
-import { hasTextChanges, mergeTextEntries, textStorageKey } from "../components/modules/themes/text-storage.js";
-import { DEFAULT_FLAGS, resolveFlags, validateFlags, filterFlaggedLayout, mergeFlaggedLayout, currentFlags, refreshFlags } from "../modules/feature-flags.js";
+import { DEFAULT_LAYOUT, normalizeLayout, moveModule } from "../src/modules/module-layout.js";
+import { MENU_THEMES, normalizeMenuTheme, resolveTileVariant } from "../src/components/menuThemes.js";
+import { radiusEditor } from "../src/components/modules/themes/radius-editor.js";
+import { hasRadiusChanges, loadRadiusEntries, mergeRadiusEntries, radiusStorageKey } from "../src/components/modules/themes/radius-storage.js";
+import { textEditor } from "../src/components/modules/themes/text-editor.js";
+import { hasTextChanges, mergeTextEntries, textStorageKey } from "../src/components/modules/themes/text-storage.js";
+import { startWhatsThisPicker, stopWhatsThisPicker } from "../src/components/modules/whats-this/picker-manager.js";
+import { DEFAULT_FLAGS, resolveFlags, validateFlags, filterFlaggedLayout, mergeFlaggedLayout, currentFlags, refreshFlags } from "../src/modules/feature-flags.js";
 
 test("feature flag refresh keeps the last valid configuration and honors the selected channel", async () => {
   const oldChrome = globalThis.chrome, oldFetch = globalThis.fetch;
@@ -38,15 +39,40 @@ test("feature flag refresh keeps the last valid configuration and honors the sel
 
 test("feature flags hide modules without losing their layout and fall back for unavailable versions", () => {
   const flags = resolveFlags(DEFAULT_FLAGS, "beta");
-  assert.equal(flags["module.whatsThis"], 0);
+  assert.equal(flags["module.whatsThis"], 1);
   assert.equal(flags["module.fontFinder"], 0);
-  const before = { active: ["manager", "font", "volume"], passive: ["color", "themes"] };
+  const before = { active: ["manager", "font", "volume"], passive: ["color", "whatsthis"] };
   const visible = filterFlaggedLayout(before, flags);
-  assert.deepEqual(visible, { active: ["manager", "volume"], passive: ["themes"] });
-  assert.deepEqual(mergeFlaggedLayout(before, { active: ["themes", "manager", "volume"], passive: [] }, flags),
-    { active: ["themes", "font", "manager", "volume"], passive: ["color"] });
+  assert.deepEqual(visible, { active: ["manager", "volume"], passive: ["whatsthis"] });
+  assert.deepEqual(mergeFlaggedLayout(before, { active: ["whatsthis", "manager", "volume"], passive: [] }, flags),
+    { active: ["whatsthis", "font", "manager", "volume"], passive: ["color"] });
   assert.equal(validateFlags({ stable: { "module.whatsThis": -1 }, beta: {} }), null);
   assert.deepEqual(resolveFlags(null), resolveFlags(DEFAULT_FLAGS));
+});
+
+test("Whats This stops the previous tab before starting another picker", async () => {
+  const previousChrome = globalThis.chrome;
+  const state = {}, actions = [];
+  globalThis.chrome = {
+    storage: { session: { get: async key => ({ [key]: state[key] }), set: async values => Object.assign(state, values) } },
+    tabs: {
+      get: async tabId => ({ id: tabId, active: true, windowId: 1 }),
+      sendMessage: async tabId => { actions.push(`stop:${tabId}`); return { ok: true }; },
+      captureVisibleTab: async () => "image"
+    },
+    scripting: { executeScript: async ({ target, func }) => { actions.push(`${func.name}:${target.tabId}`); } }
+  };
+  try {
+    await startWhatsThisPicker(1, "font");
+    await startWhatsThisPicker(2, "color");
+    assert.ok(actions.indexOf("stop:1") < actions.indexOf("installPickerControl:2"));
+    assert.deepEqual(state.whatsThisActivePicker, { tabId: 2, mode: "color" });
+    await stopWhatsThisPicker(1);
+    assert.deepEqual(state.whatsThisActivePicker, { tabId: 2, mode: "color" });
+    await stopWhatsThisPicker();
+    assert.equal(state.whatsThisActivePicker, null);
+    assert.equal(actions.at(-1), "stop:2");
+  } finally { if (previousChrome === undefined) delete globalThis.chrome; else globalThis.chrome = previousChrome; }
 });
 
 test("text changes are independent of radius settings and require matching original text", async () => {
@@ -146,8 +172,8 @@ test("layout preserves choices, defaults only missing data and keeps unlisted mo
   const migrated = normalizeLayout({ active: ["editor"], passive: ["themes"] });
   assert.deepEqual(migrated.active, ["themes"]);
   assert.equal(migrated.passive.includes("editor"), false);
-  assert.deepEqual(normalizeLayout({ active: [], passive: ["font", "qr", "volume", "manager"] }), { active: [], passive: ["font", "qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow", "themes"] });
-  assert.deepEqual(normalizeLayout({ active: ["font", "font", "unknown"], passive: ["font", "manager"] }), { active: ["font"], passive: ["manager", "volume", "qr", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow", "themes"] });
+  assert.deepEqual(normalizeLayout({ active: [], passive: ["font", "qr", "volume", "manager"] }), { active: [], passive: ["font", "qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow", "themes", "whatsthis"] });
+  assert.deepEqual(normalizeLayout({ active: ["font", "font", "unknown"], passive: ["font", "manager"] }), { active: ["font"], passive: ["manager", "volume", "qr", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow", "themes", "whatsthis"] });
 });
 
 test("drop positions support reordering and moving to an empty group without duplicating modules", () => {
@@ -155,10 +181,10 @@ test("drop positions support reordering and moving to an empty group without dup
   assert.deepEqual(reordered.active, ["volume", "manager", "themes"]);
   assert.deepEqual(moveModule(reordered, "manager", "active", 0).active, DEFAULT_LAYOUT.active);
   const passive = moveModule(DEFAULT_LAYOUT, "volume", "passive", 1);
-  assert.deepEqual(passive, { active: ["manager", "themes"], passive: ["qr", "volume", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow"] });
+  assert.deepEqual(passive, { active: ["manager", "themes"], passive: ["qr", "volume", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow", "whatsthis"] });
   const allPassive = moveModule(passive, "manager", "passive", 3);
-  assert.deepEqual(moveModule(allPassive, "font", "active", 0), { active: ["font", "themes"], passive: ["qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow"] });
-  assert.deepEqual(DEFAULT_LAYOUT, { active: ["manager", "volume", "themes"], passive: ["qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow"] });
+  assert.deepEqual(moveModule(allPassive, "font", "active", 0), { active: ["font", "themes"], passive: ["qr", "volume", "manager", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow", "whatsthis"] });
+  assert.deepEqual(DEFAULT_LAYOUT, { active: ["manager", "volume", "themes"], passive: ["qr", "font", "color", "drawing", "newtab", "shortcuts", "screenshot", "dark", "groups", "video", "gestureflow", "whatsthis"] });
 });
 
 test("passivation waits for pending starts, stops all tabs and blocks further starts", async () => {
@@ -218,6 +244,12 @@ test("passivation waits for pending starts, stops all tabs and blocks further st
     };
     assert.deepEqual((await call("modules-background", "modules:get")).layout, DEFAULT_LAYOUT);
     assert.deepEqual(saved.moduleLayout, DEFAULT_LAYOUT);
+    const saveColor = target => new Promise(resolve => listener({ target, type: "color:save", color: "#123456" }, { id: "test", tab: { id: 1 } }, resolve));
+    assert.equal((await saveColor("whats-this-color-background")).ok, false);
+    await call("modules-background", "modules:set", { layout: { active: ["manager", "volume", "whatsthis"], passive: ["color"] } });
+    assert.equal((await saveColor("whats-this-color-background")).ok, true);
+    assert.equal(saved.colorHistory[0].color, "#123456");
+    assert.equal((await saveColor("color-background")).ok, false);
     assert.equal((await call("font-background", "font:start", { tabId: 3 })).ok, false);
     const starting = call("audio-background", "audio:start", { tabId: 1, settings: { gain: 6, preset: "flat" } });
     await capturing;

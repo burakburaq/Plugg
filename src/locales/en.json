@@ -1,8 +1,8 @@
 {
-  "settings_beta": { "message": "Beta" },
-  "settings_menu_unavailable": { "message": "The menu is unavailable in this channel." },
   "modules_gestureflow": { "message": "GestureFlow" },
-  "modules_themes": { "message": "Themes" },
+  "modules_themes": { "message": "HTML editor" },
+  "modules_whats_this": { "message": "Whats This?" },
+  "whats_this_keep_font_indicators": { "message": "Keep font indicators" },
   "themes_radius_editor": { "message": "Border radius" },
   "themes_text_content": { "message": "Text content" },
   "themes_unavailable": { "message": "This tool is unavailable on this page. Try a regular web page." },
@@ -13,6 +13,8 @@
   "settings_title": {
     "message": "Settings"
   },
+  "settings_beta": { "message": "Beta" },
+  "settings_menu_unavailable": { "message": "The menu is unavailable in this channel." },
   "settings_theme_dull": { "message": "dull" },
   "settings_theme_win8": { "message": "win8" },
   "settings_empty": {

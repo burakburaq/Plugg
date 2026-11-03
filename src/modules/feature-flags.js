@@ -1,4 +1,4 @@
-import bundled from "../feature-flags.json" with { type: "json" };
+import bundled from "../../feature-flags.json" with { type: "json" };
 import { MODULE_VERSION_LOADERS } from "./module-loading.js";
 
 export const FEATURE_FLAGS = Object.freeze({

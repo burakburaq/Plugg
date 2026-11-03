@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { recentModules, RECENT_WINDOW, normalizeSortOrder } from "../modules/module-loading.js";
+import { recentModules, RECENT_WINDOW, normalizeSortOrder } from "../src/modules/module-loading.js";
 
 test("recent opens exclude expired, future, invalid and unknown entries", () => {
   const now = RECENT_WINDOW * 2;

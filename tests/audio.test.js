@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { BANDS, PRESETS, normalizeSettings } from "../components/modules/volume-booster/audio-settings.js";
+import { BANDS, PRESETS, normalizeSettings } from "../src/components/modules/volume-booster/audio-settings.js";
 
 test("audio settings bound amplification/EQ and retain mute", () => {
   assert.equal(normalizeSettings({ gain: 0 }).gain, 0);

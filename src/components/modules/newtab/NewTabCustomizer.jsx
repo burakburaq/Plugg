@@ -5,7 +5,7 @@ import Button from "../../Button.jsx";
 export default function NewTabCustomizer() {
   const [error, setError] = useState("");
   async function open() {
-    try { await chrome.tabs.create({ url: chrome.runtime.getURL("components/modules/newtab/newtab.html") }); }
+    try { await chrome.tabs.create({ url: chrome.runtime.getURL("src/components/modules/newtab/newtab.html") }); }
     catch { setError(t("new_tab_could_not_open_new_tab")); }
   }
   return <section id="newtab-view" className="tool-content">

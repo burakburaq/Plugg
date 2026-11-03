@@ -26,11 +26,11 @@ jobs:
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: plugg-chrome
-          path: dist-chrome/
+          path: build/dist-chrome/
           if-no-files-found: error
       - name: Upload Firefox build
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: plugg-firefox
-          path: dist-firefox/
+          path: build/dist-firefox/
           if-no-files-found: error
