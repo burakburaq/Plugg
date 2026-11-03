@@ -9,8 +9,17 @@ export function startColorInspector(imageUrl) {
 
   const key = "__pluggColorInspector";
   globalThis[key]?.();
+  let cancelled = false;
+  const receive = (message, sender, reply) => {
+    if (sender.id !== chrome.runtime.id || message?.target !== "plugg-feature-control" || message.module !== "color") return;
+    globalThis[key]?.(); reply({ ok: true });
+  };
+  chrome.runtime.onMessage.addListener(receive);
+  const cancelPending = () => { cancelled = true; chrome.runtime.onMessage.removeListener(receive); if (globalThis[key] === cancelPending) delete globalThis[key]; };
+  globalThis[key] = cancelPending;
   const image = new Image();
   image.onload = () => {
+    if (cancelled) return;
     const source = document.createElement("canvas");
     source.width = image.naturalWidth;
     source.height = image.naturalHeight;
@@ -49,6 +58,7 @@ export function startColorInspector(imageUrl) {
       listeners.abort();
       host.remove();
       cursorStyle.remove();
+      chrome.runtime.onMessage.removeListener(receive);
       if (globalThis[key] === stop) delete globalThis[key];
     };
     globalThis[key] = stop;
@@ -236,5 +246,6 @@ export function startColorInspector(imageUrl) {
     addEventListener("scroll", scheduleRefresh, options);
     addEventListener("resize", scheduleRefresh, options);
   };
+  image.onerror = cancelPending;
   image.src = imageUrl;
 }

@@ -1,4 +1,6 @@
 {
+  "settings_beta": { "message": "Beta" },
+  "settings_menu_unavailable": { "message": "The menu is unavailable in this channel." },
   "modules_gestureflow": { "message": "GestureFlow" },
   "modules_themes": { "message": "Themes" },
   "themes_radius_editor": { "message": "Border radius" },

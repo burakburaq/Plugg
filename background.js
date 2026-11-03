@@ -12,6 +12,8 @@ import { radiusEditor } from "./components/modules/themes/radius-editor.js";
 import { loadRadiusEntries } from "./components/modules/themes/radius-storage.js";
 import { textEditor } from "./components/modules/themes/text-editor.js";
 import { loadTextEntries } from "./components/modules/themes/text-storage.js";
+import { installThemesControl } from "./components/modules/themes/themes-control.js";
+import { FLAG_CACHE_KEY, FLAG_CHANNEL_KEY, FEATURE_FLAGS, currentFlags, filterFlaggedLayout, mergeFlaggedLayout, refreshFlags, resolveFlags } from "./modules/feature-flags.js";
 
 let creating;
 const starting = new Map();
@@ -24,7 +26,7 @@ function enqueue(task) {
   return job;
 }
 
-function getLayout() {
+function getStoredLayout() {
   if (!layoutPromise) {
     layoutPromise = (async () => {
       const stored = await chrome.storage.local.get(LAYOUT_KEY);
@@ -35,10 +37,32 @@ function getLayout() {
   }
   return layoutPromise;
 }
+async function getLayout() { return filterFlaggedLayout(await getStoredLayout(), await currentFlags()); }
 
 chrome.storage.onChanged.addListener((changes, area) => {
   invalidateDrawingSettings(changes, area);
   if (area === "local" && changes[LAYOUT_KEY]) layoutPromise = undefined;
+  if (area === "local" && (changes[FLAG_CACHE_KEY] || changes[FLAG_CHANNEL_KEY])) {
+    enqueue(async () => {
+      const channel = (await chrome.storage.local.get(FLAG_CHANNEL_KEY))[FLAG_CHANNEL_KEY] || "stable";
+      const cache = (await chrome.storage.local.get(FLAG_CACHE_KEY))[FLAG_CACHE_KEY];
+      const oldChannel = changes[FLAG_CHANNEL_KEY] ? changes[FLAG_CHANNEL_KEY].oldValue || "stable" : channel;
+      const oldConfig = changes[FLAG_CACHE_KEY] ? changes[FLAG_CACHE_KEY].oldValue?.config : cache?.config;
+      const before = resolveFlags(oldConfig, oldChannel), after = resolveFlags(cache?.config, channel);
+      const disabled = id => before[FEATURE_FLAGS[id]] > 0 && after[FEATURE_FLAGS[id]] === 0;
+      if (disabled("volume")) await stopAllAudio();
+      if (disabled("font")) await stopAllFonts();
+      if (disabled("drawing")) await stopDrawings();
+      if (disabled("shortcuts")) await resetShortcutTabs(false);
+      if (disabled("dark")) await stopDarkMode(true);
+      if (disabled("video")) await stopVideos();
+      for (const id of ["themes", "color"]) if (disabled(id)) {
+        const tabs = await chrome.tabs.query({});
+        await Promise.all(tabs.map(tab => chrome.tabs.sendMessage(tab.id, { target: "plugg-feature-control", module: id }, { frameId: 0 }).catch(() => {})));
+      }
+      if (!before[FEATURE_FLAGS.dark] && after[FEATURE_FLAGS.dark] && (await getStoredLayout()).active.includes("dark")) await handleDarkMode({ type: "dark:get" });
+    }).catch(() => {});
+  }
   if (area === "local" && changes[DARK_KEY]) {
     chrome.runtime.sendMessage({ target: "modules-popup", type: "modules:running", module: "dark", active: !!changes[DARK_KEY].newValue?.enabled }).catch(() => {});
   }
@@ -171,21 +195,33 @@ async function handleFont(message, sender) {
 }
 
 async function handleModules(message) {
-  if (message.type === "modules:get") return getLayout();
+  if (message.type === "modules:get") return getStoredLayout();
   if (message.type === "modules:status") return runningModules();
   if (message.type !== "modules:set") throw new Error(t("common_unknown_module_operation"));
   const before = await getLayout();
-  const next = normalizeLayout(message.layout);
+  const flags = await currentFlags();
+  const next = normalizeLayout(mergeFlaggedLayout(await getStoredLayout(), message.layout, flags));
+  const nextVisible = filterFlaggedLayout(next, flags);
   // Commands are serialized: any pending start finishes before this cleanup.
-  if (before.active.includes("volume") && !next.active.includes("volume")) await stopAllAudio();
-  if (before.active.includes("font") && !next.active.includes("font")) await stopAllFonts();
-  if (before.active.includes("drawing") && !next.active.includes("drawing")) await stopDrawings();
-  if (before.active.includes("shortcuts") !== next.active.includes("shortcuts")) await resetShortcutTabs(next.active.includes("shortcuts"));
-  if (before.active.includes("dark") && !next.active.includes("dark")) await stopDarkMode();
-  if (before.active.includes("video") && !next.active.includes("video")) await stopVideos();
+  if (before.active.includes("volume") && !nextVisible.active.includes("volume")) await stopAllAudio();
+  if (before.active.includes("font") && !nextVisible.active.includes("font")) await stopAllFonts();
+  if (before.active.includes("drawing") && !nextVisible.active.includes("drawing")) await stopDrawings();
+  if (before.active.includes("shortcuts") !== nextVisible.active.includes("shortcuts")) await resetShortcutTabs(nextVisible.active.includes("shortcuts"));
+  if (before.active.includes("dark") && !nextVisible.active.includes("dark")) await stopDarkMode();
+  if (before.active.includes("video") && !nextVisible.active.includes("video")) await stopVideos();
   await chrome.storage.local.set({ [LAYOUT_KEY]: next });
   layoutPromise = Promise.resolve(next);
   return next;
+}
+
+async function handleFlags(message) {
+  if (message.type === "flags:get") { void refreshFlags().catch(() => {}); return currentFlags(); }
+  if (message.type === "flags:channel" && ["stable", "beta"].includes(message.channel)) {
+    await chrome.storage.local.set({ [FLAG_CHANNEL_KEY]: message.channel });
+    void refreshFlags(true).catch(() => {});
+    return currentFlags();
+  }
+  throw new Error("Invalid feature flag operation");
 }
 
 async function startAudio(message) {
@@ -220,7 +256,8 @@ async function handle(message) {
 chrome.runtime.onMessage.addListener((message, sender, reply) => {
   if (sender.id !== chrome.runtime.id) return;
   const handler = { "audio-background": handle, "font-background": handleFont, "modules-background": handleModules, "drawing-background": drawingHandler, "shortcuts-background": shortcutsHandler,
-    "dark-background": darkHandler, "video-background": videoHandler, "page-tools-background": pageToolsHandler, "color-background": colorHandler }[message?.target];
+    "dark-background": darkHandler, "video-background": videoHandler, "page-tools-background": pageToolsHandler, "color-background": colorHandler,
+    "flags-background": handleFlags }[message?.target];
   if (!handler) return;
   // Independent read-only resource requests must not block control/cleanup commands.
   if (message.target === "dark-background" && ["dark:fetch", "dark:context"].includes(message.type)) {
@@ -297,6 +334,10 @@ chrome.tabs.onReplaced?.addListener((added, removed) => {
 function initializeShortcutTabs() {
   enqueue(async () => { if ((await getLayout()).active.includes("shortcuts")) await resetShortcutTabs(true); }).catch(() => {});
 }
+chrome.alarms?.onAlarm.addListener(alarm => { if (alarm.name === "feature-flags-refresh") void refreshFlags(true).catch(() => {}); });
+if (chrome.alarms) void chrome.alarms.get("feature-flags-refresh").then(alarm => {
+  if (!alarm) return chrome.alarms.create("feature-flags-refresh", { periodInMinutes: 15 });
+}).catch(() => {});
 chrome.runtime.onStartup.addListener(initializeShortcutTabs);
 chrome.runtime.onInstalled.addListener(initializeShortcutTabs);
 
@@ -316,9 +357,14 @@ chrome.tabs.onUpdated.addListener((tabId, change, tab) => {
     const url = change.url || tab.url;
     enqueue(async () => {
       if (!(await getLayout()).active.includes("themes") || !/^https?:\/\//.test(url)) return;
+      const [radiusResult, textResult] = await Promise.allSettled([loadRadiusEntries(url), loadTextEntries(url)]);
+      const radius = radiusResult.status === "fulfilled" ? radiusResult.value : { entries: [] };
+      const text = textResult.status === "fulfilled" ? textResult.value : { entries: [] };
+      if (!radius.entries.length && !text.entries.length) return;
+      await chrome.scripting.executeScript({ target: { tabId }, func: installThemesControl });
       await Promise.allSettled([
-        (async () => { const { entries } = await loadRadiusEntries(url); if (entries.length) await chrome.scripting.executeScript({ target: { tabId }, func: radiusEditor, args: ["restore", entries, url] }); })(),
-        (async () => { const { entries } = await loadTextEntries(url); if (entries.length) await chrome.scripting.executeScript({ target: { tabId }, func: textEditor, args: ["restore", entries, url] }); })()
+        (async () => { if (radius.entries.length) await chrome.scripting.executeScript({ target: { tabId }, func: radiusEditor, args: ["restore", radius.entries, url] }); })(),
+        (async () => { if (text.entries.length) await chrome.scripting.executeScript({ target: { tabId }, func: textEditor, args: ["restore", text.entries, url] }); })()
       ]);
     }).catch(() => {});
   }

@@ -90,6 +90,14 @@ derlemelerin `plugg-chrome` ve `plugg-firefox` çıktıları da indirilebilir.
 
 ## Geliştirme
 
+Modül ve arayüz sürümleri `feature-flags.json` içindeki `stable` ve `beta`
+kanallarıyla belirlenir. Ayarlardaki Beta anahtarı kanalı değiştirir. Paket
+içindeki dosya varsayılandır; uzaktaki yapılandırma GitHub deposunun
+`feature-flags` dalındaki aynı adlı dosyadan okunur. Geçersiz veya erişilemeyen
+uzak veri yerine son geçerli kayıt ya da paket içi değerler kullanılır.
+`0` modülü gizler; pakette bulunmayan sürümler mevcut sürüme geri döner.
+Modül sürümleri `modules/module-loading.js` içindeki map ile tanımlanır.
+
 ```sh
 npm ci
 npm run dev

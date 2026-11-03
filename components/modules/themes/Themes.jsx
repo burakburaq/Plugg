@@ -6,6 +6,7 @@ import { radiusEditor } from "./radius-editor.js";
 import { hasRadiusChanges, loadRadiusEntries, mergeRadiusEntries } from "./radius-storage.js";
 import { textEditor } from "./text-editor.js";
 import { hasTextChanges, loadTextEntries, mergeTextEntries } from "./text-storage.js";
+import { installThemesControl } from "./themes-control.js";
 
 const tools = {
   radius: { editor: radiusEditor, load: loadRadiusEntries, merge: mergeRadiusEntries, changed: hasRadiusChanges, label: "themes_radius_editor" },
@@ -18,6 +19,7 @@ export default function Themes() {
   const [ready, setReady] = useState(false), [error, setError] = useState("");
   function update(kind, patch) { setState(current => ({ ...current, [kind]: { ...current[kind], ...patch } })); }
   async function run(kind, action, id = tabId.current) {
+    await chrome.scripting.executeScript({ target: { tabId: id }, func: installThemesControl });
     const results = await chrome.scripting.executeScript({ target: { tabId: id }, func: tools[kind].editor, args: [action] });
     return results[0]?.result;
   }

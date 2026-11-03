@@ -6,6 +6,48 @@ import { radiusEditor } from "../components/modules/themes/radius-editor.js";
 import { hasRadiusChanges, loadRadiusEntries, mergeRadiusEntries, radiusStorageKey } from "../components/modules/themes/radius-storage.js";
 import { textEditor } from "../components/modules/themes/text-editor.js";
 import { hasTextChanges, mergeTextEntries, textStorageKey } from "../components/modules/themes/text-storage.js";
+import { DEFAULT_FLAGS, resolveFlags, validateFlags, filterFlaggedLayout, mergeFlaggedLayout, currentFlags, refreshFlags } from "../modules/feature-flags.js";
+
+test("feature flag refresh keeps the last valid configuration and honors the selected channel", async () => {
+  const oldChrome = globalThis.chrome, oldFetch = globalThis.fetch;
+  const config = structuredClone(DEFAULT_FLAGS);
+  config.stable["module.darkMode"] = 0;
+  config.beta["module.darkMode"] = 1;
+  const storage = { featureFlagsChannel: "stable" };
+  globalThis.chrome = { storage: { local: {
+    get: async key => ({ [key]: storage[key] }),
+    set: async data => Object.assign(storage, data)
+  } } };
+  globalThis.fetch = async () => ({ ok: true, json: async () => config });
+  try {
+    await refreshFlags(true);
+    assert.equal((await currentFlags())["module.darkMode"], 0);
+    storage.featureFlagsChannel = "beta";
+    assert.equal((await currentFlags())["module.darkMode"], 1);
+    globalThis.fetch = async () => ({ ok: true, json: async () => ({ stable: {}, beta: {} }) });
+    await assert.rejects(refreshFlags(true));
+    assert.equal((await currentFlags())["module.darkMode"], 1);
+    globalThis.fetch = async () => { throw new Error("offline"); };
+    await assert.rejects(refreshFlags(true));
+    assert.equal((await currentFlags())["module.darkMode"], 1);
+  } finally {
+    if (oldChrome === undefined) delete globalThis.chrome; else globalThis.chrome = oldChrome;
+    globalThis.fetch = oldFetch;
+  }
+});
+
+test("feature flags hide modules without losing their layout and fall back for unavailable versions", () => {
+  const flags = resolveFlags(DEFAULT_FLAGS, "beta");
+  assert.equal(flags["module.whatsThis"], 0);
+  assert.equal(flags["module.fontFinder"], 0);
+  const before = { active: ["manager", "font", "volume"], passive: ["color", "themes"] };
+  const visible = filterFlaggedLayout(before, flags);
+  assert.deepEqual(visible, { active: ["manager", "volume"], passive: ["themes"] });
+  assert.deepEqual(mergeFlaggedLayout(before, { active: ["themes", "manager", "volume"], passive: [] }, flags),
+    { active: ["themes", "font", "manager", "volume"], passive: ["color"] });
+  assert.equal(validateFlags({ stable: { "module.whatsThis": -1 }, beta: {} }), null);
+  assert.deepEqual(resolveFlags(null), resolveFlags(DEFAULT_FLAGS));
+});
 
 test("text changes are independent of radius settings and require matching original text", async () => {
   assert.equal(await textStorageKey("https://example.com/a"), await textStorageKey("https://example.com/b"));
@@ -128,7 +170,9 @@ test("passivation waits for pending starts, stops all tabs and blocks further st
   let resumeCapture;
   const capturing = new Promise(resolve => { captureStarted = resolve; });
   const deferredCapture = new Promise(resolve => { resumeCapture = resolve; });
-  const saved = {};
+  const testFlags = structuredClone(DEFAULT_FLAGS);
+  testFlags.stable["module.fontFinder"] = 1;
+  const saved = { featureFlagsCache: { config: testFlags } };
   const sessionSaved = {};
   const sessions = new Map();
   const fontTabs = new Set();

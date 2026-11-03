@@ -11,8 +11,10 @@
     "scripting",
     "tabCapture",
     "offscreen",
-    "storage"
+    "storage",
+    "alarms"
   ],
+  "host_permissions": ["https://raw.githubusercontent.com/*"],
   "optional_host_permissions": [
     "http://*/*",
     "https://*/*"

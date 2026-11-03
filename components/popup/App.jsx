@@ -1,12 +1,14 @@
 import { t } from "../../modules/i18n.js";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import PageHeader from "../PageHeader.jsx";
+import Button from "../Button.jsx";
 import ExtensionMenu from "../ExtensionMenu.jsx";
 import Settings from "../settings/Settings.jsx";
 import { MENU_THEMES, normalizeMenuTheme } from "../menuThemes.js";
 import gestureflowPicture from "../../assets/tile-pictures/gesture-flow.png";
 import { DEFAULT_LAYOUT, LAYOUT_KEY, moveModule, normalizeLayout } from "../../modules/module-layout.js";
 import { loadModule, preloadModule, recentModules, normalizeSortOrder, RECENT_MODULES_KEY, SORT_ORDER_KEY } from "../../modules/module-loading.js";
+import { FLAG_CACHE_KEY, FLAG_CHANNEL_KEY, FEATURE_FLAGS, filterFlaggedLayout, currentFlags, resolveFlags } from "../../modules/feature-flags.js";
 
 const ExtensionManager = lazy(() => loadModule("manager"));
 const QrCreator = lazy(() => loadModule("qr"));
@@ -22,6 +24,14 @@ const DomainGroups = lazy(() => loadModule("groups"));
 const VideoTools = lazy(() => loadModule("video"));
 const GestureFlow = lazy(() => loadModule("gestureflow"));
 const Themes = lazy(() => loadModule("themes"));
+const MENU_VERSIONS = { 1: ExtensionMenu };
+const versionedComponents = new Map();
+function componentForVersion(module, version) {
+  if (version === 1) return module.Component;
+  const key = `${module.id}:${version}`;
+  if (!versionedComponents.has(key)) versionedComponents.set(key, lazy(() => loadModule(module.id, version)));
+  return versionedComponents.get(key);
+}
 
 const modules = [
   { id: "manager", title: t("modules_extension_manager"), description: t("modules_enable_and_disable_extensions"), Component: ExtensionManager,
@@ -51,7 +61,7 @@ const modules = [
   { id: "gestureflow", title: t("modules_gestureflow"), description: t("modules_gestureflow"), Component: GestureFlow, picture: gestureflowPicture,
     icon: <path d="M8 12V5a2 2 0 0 1 4 0v5-6a2 2 0 0 1 4 0v7-4a2 2 0 0 1 4 0v7c0 5-3 8-8 8H9c-2 0-4-1-5-3l-2-4a2 2 0 0 1 3-2l3 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /> },
   { id: "themes", title: t("modules_themes"), description: t("modules_themes"), Component: Themes,
-    icon: <><path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1.6-3.2 1.5 1.5 0 0 1 1.2-2.4h1.7a3.5 3.5 0 0 0 3.5-3.5C21 7 17 3 12 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><circle cx="7.5" cy="11" r="1" fill="currentColor" /><circle cx="10" cy="7.5" r="1" fill="currentColor" /><circle cx="14" cy="7.5" r="1" fill="currentColor" /><circle cx="17" cy="11" r="1" fill="currentColor" /></> }
+    icon: <><path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1.6-3.2 1.5 1.5 0 0 1 1.2-2.4h1.7a3.5 3.5 0 0 0 3.5-3.5C21 7 17 3 12 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><circle cx="7.5" cy="11" r="1" fill="currentColor" /><circle cx="10" cy="7.5" r="1" fill="currentColor" /><circle cx="14" cy="7.5" r="1" fill="currentColor" /><circle cx="17" cy="11" r="1" fill="currentColor" /></> },
 ];
 
 export default function App() {
@@ -62,6 +72,8 @@ export default function App() {
   const [selected, setSelected] = useState(null);
   const [theme, setTheme] = useState("dull");
   const [language, setLanguage] = useState("en");
+  const [beta, setBeta] = useState(false);
+  const [flags, setFlags] = useState(() => resolveFlags(null));
   const [settingsError, setSettingsError] = useState("");
   const [settingsReady, setSettingsReady] = useState(false);
   const [settingsSaving, setSettingsSaving] = useState(false);
@@ -72,7 +84,7 @@ export default function App() {
   const [qrDraft, setQrDraft] = useState({ type: "url", text: "", size: "512 × 512", correction: "M", foreground: "#000000", background: "#ffffff" });
   useEffect(() => {
     let mounted = true;
-    chrome.storage.local.get(["menuTheme", "language"]).then(async settings => {
+    chrome.storage.local.get(["menuTheme", "language", FLAG_CHANNEL_KEY]).then(async settings => {
       if (!mounted) return;
       const normalized = normalizeMenuTheme(settings.menuTheme);
       setTheme(normalized);
@@ -80,11 +92,24 @@ export default function App() {
         await chrome.storage.local.set({ menuTheme: normalized });
       }
       if (mounted) setLanguage(settings.language === "en" ? settings.language : "en");
+      if (mounted) setBeta(settings[FLAG_CHANNEL_KEY] === "beta");
     }).catch(() => { if (mounted) setSettingsError(t("settings_save_error")); })
       .finally(() => { if (mounted) setSettingsReady(true); });
     return () => { mounted = false; };
   }, []);
   useEffect(() => { document.body.dataset.theme = theme; }, [theme]);
+  useEffect(() => {
+    let mounted = true;
+    let revision = 0;
+    const read = () => { const current = ++revision; return currentFlags().then(value => { if (mounted && current === revision) setFlags(value); }).catch(() => {}); };
+    const listener = (changes, area) => { if (area === "local" && (changes[FLAG_CACHE_KEY] || changes[FLAG_CHANNEL_KEY])) void read(); };
+    chrome.storage.onChanged.addListener(listener);
+    chrome.runtime.sendMessage({ target: "flags-background", type: "flags:get" }).then(response => { if (mounted && response?.ok) void read(); }).catch(() => {});
+    void read();
+    return () => { mounted = false; chrome.storage.onChanged.removeListener(listener); };
+  }, []);
+  const visibleLayout = filterFlaggedLayout(layout, flags);
+  useEffect(() => { setSelected(value => value && value !== "settings" && !visibleLayout.active.includes(value) ? null : value); }, [flags]);
 
   async function changeSetting(key, value) {
     if (settingsSaving) return;
@@ -94,6 +119,16 @@ export default function App() {
       if (key === "menuTheme") setTheme(value);
       if (key === "language") setLanguage(value);
       setSettingsError("");
+    } catch { setSettingsError(t("settings_save_error")); }
+    finally { setSettingsSaving(false); }
+  }
+  async function changeBeta(value) {
+    if (settingsSaving) return;
+    setSettingsSaving(true);
+    try {
+      const response = await chrome.runtime.sendMessage({ target: "flags-background", type: "flags:channel", channel: value ? "beta" : "stable" });
+      if (!response?.ok) throw new Error();
+      setBeta(value); setFlags(response.state); setSettingsError("");
     } catch { setSettingsError(t("settings_save_error")); }
     finally { setSettingsSaving(false); }
   }
@@ -157,16 +192,16 @@ export default function App() {
   useEffect(() => {
     if (!ready) return;
     const recent = recentModules(recentOpens.current);
-    layout.active.forEach(id => { if (id in recent) preloadModule(id); });
-  }, [ready, layout]);
+    visibleLayout.active.forEach(id => { if (id in recent) preloadModule(id, flags[FEATURE_FLAGS[id]]); });
+  }, [ready, layout, flags]);
 
   async function selectModule(id) {
     if (!ready || saving || !modules.some(item => item.id === id)) return;
-    if (!layout.active.includes(id)) {
-      if (!layout.passive.includes(id)) return;
+    if (!visibleLayout.active.includes(id)) {
+      if (!visibleLayout.passive.includes(id)) return;
       setSaving(true); setError("");
       try {
-        const next = moveModule(layout, id, "active", layout.active.length);
+        const next = moveModule(visibleLayout, id, "active", visibleLayout.active.length);
         const response = await chrome.runtime.sendMessage({ target: "modules-background", type: "modules:set", layout: next });
         if (!response?.ok) throw new Error(response?.error || t("modules_could_not_save_module_layout"));
         setLayout(normalizeLayout(response.layout));
@@ -199,14 +234,18 @@ export default function App() {
 
   if (selected === "settings") return <>
     <main className="module-content" aria-labelledby="settings-title">
-      <Settings theme={theme} language={language} error={settingsError} disabled={!settingsReady || settingsSaving} onThemeChange={value => changeSetting("menuTheme", value)} onLanguageChange={value => changeSetting("language", value)} />
+      <Settings theme={theme} language={language} beta={beta} error={settingsError} disabled={!settingsReady || settingsSaving} onThemeChange={value => changeSetting("menuTheme", value)} onLanguageChange={value => changeSetting("language", value)} onBetaChange={changeBeta} />
     </main>
     <PageHeader title={t("settings_title")} titleId="settings-title" onBack={() => setSelected(null)} />
   </>;
-  const module = layout.active.includes(selected) && modules.find(item => item.id === selected);
-  if (!module) return <ExtensionMenu theme={theme} themeConfig={MENU_THEMES[theme]} modules={modules} layout={layout} ready={ready} saving={saving} error={error} onLayoutChange={saveLayout}
-    lastModule={lastModule} onSelect={selectModule} onOpenSettings={() => { setSelected("settings"); setLastModule(null); }} onPreload={preloadModule} running={running} />;
-  const SelectedModule = module.Component;
+  if (!flags["extension.menu"]) return <main className="tool-content"><p>{t("settings_menu_unavailable")}</p><Button variant="secondary" onClick={() => setSelected("settings")}>{t("settings_title")}</Button></main>;
+  const module = visibleLayout.active.includes(selected) && modules.find(item => item.id === selected);
+  if (!module) {
+    const Menu = MENU_VERSIONS[flags["extension.menu"]] || MENU_VERSIONS[1];
+    return <Menu theme={theme} themeConfig={MENU_THEMES[theme]} modules={modules} layout={visibleLayout} ready={ready} saving={saving} error={error} onLayoutChange={saveLayout}
+      lastModule={lastModule} onSelect={selectModule} onOpenSettings={() => { setSelected("settings"); setLastModule(null); }} onPreload={id => preloadModule(id, flags[FEATURE_FLAGS[id]])} running={running} />;
+  }
+  const SelectedModule = componentForVersion(module, flags[FEATURE_FLAGS[module.id]]);
   const titleId = `${module.id}-title`;
   return <>
     <main className="module-content" aria-labelledby={titleId} key={module.id}>

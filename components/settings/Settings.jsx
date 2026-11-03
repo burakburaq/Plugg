@@ -1,6 +1,7 @@
 import { t } from "../../modules/i18n.js";
+import Toggle from "../Toggle.jsx";
 
-export default function Settings({ theme, language, onThemeChange, onLanguageChange, error, disabled }) {
+export default function Settings({ theme, language, beta, onThemeChange, onLanguageChange, onBetaChange, error, disabled }) {
   return <section className="tool-content">
     <div className="field">
       <label htmlFor="settings-theme">{t("settings_theme")}</label>
@@ -9,6 +10,7 @@ export default function Settings({ theme, language, onThemeChange, onLanguageCha
         <option value="win8">{t("settings_theme_win8")}</option>
       </select>
     </div>
+    <div className="color-indicator-setting"><span id="settings-beta-label">{t("settings_beta")}</span><Toggle aria-labelledby="settings-beta-label" checked={beta} disabled={disabled} onChange={onBetaChange} /></div>
     <div className="field">
       <label htmlFor="settings-language">{t("settings_language")}</label>
       <select id="settings-language" value={language} disabled={disabled} onChange={event => onLanguageChange(event.target.value)}>

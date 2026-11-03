@@ -43,10 +43,10 @@ export async function fetchDarkResource(url) {
   for (let offset = 0; offset < bytes.length; offset += 8192) binary += String.fromCharCode(...bytes.subarray(offset, offset + 8192));
   return { data: btoa(binary), contentType: response.headers.get("content-type") || "application/octet-stream" };
 }
-export async function stopDarkMode() {
+export async function stopDarkMode(preserveSettings = false) {
   await chrome.scripting.unregisterContentScripts({ ids: [SCRIPT_ID] }).catch(() => {});
   const settings = await getDarkSettings();
-  if (settings.enabled) await chrome.storage.local.set({ [DARK_KEY]: { ...settings, enabled: false } });
+  if (settings.enabled && !preserveSettings) await chrome.storage.local.set({ [DARK_KEY]: { ...settings, enabled: false } });
   const tabs = await chrome.tabs.query({ url: ["http://*/*", "https://*/*"] });
   await Promise.all(tabs.map(tab => chrome.tabs.sendMessage(tab.id, { target: "dark-page", type: "dark:stop" }).catch(() => {})));
 }
